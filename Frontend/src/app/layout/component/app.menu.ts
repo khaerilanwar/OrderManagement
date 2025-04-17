@@ -22,18 +22,41 @@ export class AppMenu {
         this.model = [
             {
                 label: 'Home',
-                items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/'] }]
+                items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/admin'] }]
             },
             {
                 label: 'Transaction',
                 items: [
                     { 
-                        label: 'Order Type', 
+                        label: 'Order Category', 
                         icon: 'pi pi-fw pi-id-card',
-                        items: [
-                            { label: 'Create Order Type' }
-                        ]
+                        routerLink: ['/admin/transaction/order-category']
+                    },
+                    { 
+                        label: 'Order List', 
+                        icon: 'pi pi-fw pi-id-card',
+                        routerLink: ['/admin/transaction/order-list']
                     }
+                ]
+            },
+            {
+                label: 'Project',
+                items: [
+                    { 
+                        label: 'Bot App', 
+                        icon: 'pi pi-fw pi-id-card',
+                        routerLink: ['/admin/project/bot-app']
+                    },
+                    { 
+                        label: 'Fullstack App', 
+                        icon: 'pi pi-fw pi-id-card',
+                        routerLink: ['/admin/project/fullstack-app']
+                    },
+                    { 
+                        label: 'MVC App', 
+                        icon: 'pi pi-fw pi-id-card',
+                        routerLink: ['/admin/project/mvc-app']
+                    },
                 ]
             },
         ];
