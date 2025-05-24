@@ -1,0 +1,4 @@
+.env
+debug.js
+prisma/migrations/
+node_modules/

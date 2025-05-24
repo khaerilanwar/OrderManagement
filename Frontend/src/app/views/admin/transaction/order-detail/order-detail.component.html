@@ -1,0 +1,161 @@
+<p-card [header]="'Order ID : ' + order?.id">
+    <p-accordion [value]="['0', '1']" [multiple]="true">
+        <p-accordion-panel value="0">
+            <p-accordion-header> Detail </p-accordion-header>
+            <p-accordion-content>
+                <div class="flex justify-between">
+                    <table class="text-base border-separate border-spacing-y-3">
+                        <tr>
+                            <td class="min-w-44 font-semibold">Nomor Pesanan</td>
+                            <td class="min-w-4">:</td>
+                            <td>{{ order?.id }}</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">Nama Pesanan</td>
+                            <td>:</td>
+                            <td>{{ order?.title }}</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">Kategori</td>
+                            <td>:</td>
+                            <td>{{ order?.category.name }}</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">Status Pesanan</td>
+                            <td>:</td>
+                            <td>
+                                <p-badge
+                                    [severity]="
+                                        order?.status.name === 'Baru'
+                                            ? 'info'
+                                            : order?.status.name === 'Bayar'
+                                              ? 'warn'
+                                              : order?.status.name === 'Konfirmasi'
+                                                ? 'secondary'
+                                                : order?.status.name === 'Diproses'
+                                                  ? 'contrast'
+                                                  : order?.status.name === 'Selesai'
+                                                    ? 'success'
+                                                    : order?.status.name === 'Batal'
+                                                      ? 'danger'
+                                                      : 'secondary'
+                                    "
+                                    [value]="order?.status.detail"
+                                />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="vertical-align: top" class="font-semibold">Deskripsi</td>
+                            <td style="vertical-align: top">:</td>
+                            <td class="max-w-2xl">{{ order?.description }}</td>
+                        </tr>
+                    </table>
+                    <p-button label="Edit" icon="pi pi-pencil" severity="warn" (click)="onOpenModal('order')" />
+                </div>
+            </p-accordion-content>
+        </p-accordion-panel>
+        <p-accordion-panel value="1">
+            <p-accordion-header> Invoice </p-accordion-header>
+            <p-accordion-content>
+                <div class="flex justify-between">
+                    <table class="text-base border-separate border-spacing-y-3">
+                        <tr>
+                            <td class="min-w-44 font-semibold">Total Tagihan</td>
+                            <td class="min-w-4">:</td>
+                            <td>{{ order?.invoice | currency: 'Rp. ' : 'symbol' : '1.0' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">Sudah Terbayarkan</td>
+                            <td class="min-w-4">:</td>
+                            <td>{{ order?.down_payment | currency: 'Rp. ' : 'symbol' : '1.0' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">Kekurangan</td>
+                            <td class="min-w-4">:</td>
+                            <td>{{ order?.invoice - order?.down_payment < 0 ? 0 : (order?.invoice - order?.down_payment | currency: 'Rp. ' : 'symbol' : '1.0') }}</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">Status Tagihan</td>
+                            <td class="min-w-4">:</td>
+                            <td>
+                                <p-badge
+                                    [value]="order?.down_payment >= order?.invoice ? 'Sudah Lunas' : order?.down_payment === 0 ? 'Belum Dibayar' : 'Belum Lunas'"
+                                    [severity]="order?.down_payment >= order?.invoice ? 'success' : order?.down_payment === 0 ? 'danger' : 'warn'"
+                                />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">Tanggal Pesanan</td>
+                            <td class="min-w-4">:</td>
+                            <td>{{ order?.created_at | date: 'dd MMMM yyyy HH:mm' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">Terakhir Diperbarui</td>
+                            <td class="min-w-4">:</td>
+                            <td>{{ order?.updated_at | date: 'dd MMMM yyyy HH:mm' }}</td>
+                        </tr>
+                    </table>
+                    <p-button label="Edit" icon="pi pi-pencil" (click)="onOpenModal('invoice')" severity="warn" />
+                </div>
+            </p-accordion-content>
+        </p-accordion-panel>
+        <p-accordion-panel value="2">
+            <p-accordion-header> Customer </p-accordion-header>
+            <p-accordion-content>
+                <div class="flex justify-between">
+                    <table class="text-base border-separate border-spacing-y-3">
+                        <tr>
+                            <td class="min-w-44 font-semibold">Nama</td>
+                            <td class="min-w-4">:</td>
+                            <td>{{ order?.customer.name }}</td>
+                        </tr>
+                        <tr>
+                            <td class="min-w-44 font-semibold">Whatsapp</td>
+                            <td class="min-w-4">:</td>
+                            <td>{{ order?.customer.whatsapp }}</td>
+                        </tr>
+                        <tr>
+                            <td class="min-w-44 font-semibold">Telegram</td>
+                            <td class="min-w-4">:</td>
+                            <td>{{ order?.customer.telegram }}</td>
+                        </tr>
+                        <tr>
+                            <td class="min-w-44 font-semibold">Alamat</td>
+                            <td class="min-w-4">:</td>
+                            <td>{{ order?.customer.address }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </p-accordion-content>
+        </p-accordion-panel>
+    </p-accordion>
+</p-card>
+
+<p-dialog [header]="headerModal" [closeOnEscape]="true" [dismissableMask]="true" [modal]="true" [(visible)]="openModal" [style]="{ width: '30rem' }" po>
+    @if (headerModal === 'Edit Order') {
+        <div class="flex flex-col gap-2 mb-4">
+            <label for="status">Status</label>
+            <p-select id="status" [options]="status" [(ngModel)]="selectedStatus" optionLabel="name" placeholder="Select status" class="w-full" />
+        </div>
+        <div class="flex flex-col gap-2 mb-4">
+            <label for="description">Description</label>
+            <textarea class="w-full" rows="5" id="description" [(ngModel)]="descriptionEdit" pTextarea></textarea>
+        </div>
+    } @else {
+        <div class="flex flex-col gap-2 mb-4">
+            <label for="status">Tagihan</label>
+            <p-inputNumber [(ngModel)]="invoice" mode="currency" currency="IDR" locale="id-ID" minFractionDigits="0" />
+        </div>
+        <div class="flex flex-col gap-2 mb-4">
+            <label for="status">Pembayaran</label>
+            <p-inputNumber [(ngModel)]="amountPaid" mode="currency" currency="IDR" locale="id-ID" minFractionDigits="0" />
+            <small id="username-help"
+                >Harus dibayarkan : <span class="text-red-500 font-semibold"> {{ order?.invoice - order?.down_payment | currency: 'Rp. ' : 'symbol' : '1.0' }} </span>
+            </small>
+        </div>
+    }
+    <div class="flex justify-end gap-2">
+        <p-button label="Cancel" severity="secondary" (click)="toggleModal()" />
+        <p-button label="Save" (click)="onSaveModal()" />
+    </div>
+</p-dialog>

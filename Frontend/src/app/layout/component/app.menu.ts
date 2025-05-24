@@ -21,44 +21,62 @@ export class AppMenu {
     ngOnInit() {
         this.model = [
             {
-                label: 'Home',
-                items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/admin'] }]
-            },
-            {
-                label: 'Transaction',
+                label: 'Order Management',
                 items: [
-                    { 
-                        label: 'Order Category', 
-                        icon: 'pi pi-fw pi-id-card',
-                        routerLink: ['/admin/transaction/order-category']
+                    {
+                        label: 'Dashboard',
+                        icon: 'pi pi-fw pi-home',
+                        routerLink: ['/admin']
                     },
-                    { 
-                        label: 'Order List', 
+                    {
+                        label: 'Order',
                         icon: 'pi pi-fw pi-id-card',
-                        routerLink: ['/admin/transaction/order-list']
+                        items: [
+                            {
+                                label: 'Order List',
+                                icon: 'pi pi-fw pi-id-card',
+                                routerLink: ['/admin/order/list']
+                            },
+                            {
+                                label: 'Order Category',
+                                icon: 'pi pi-fw pi-id-card',
+                                routerLink: ['/admin/order/category']
+                            }
+                        ]
+                    },
+                    {
+                        label: 'Project',
+                        icon: 'pi pi-fw pi-id-card',
+                        items: [
+                            {
+                                label: 'Bot',
+                                icon: 'pi pi-fw pi-id-card',
+                                routerLink: ['/admin/project/bot']
+                            },
+                            {
+                                label: 'Fullstack',
+                                icon: 'pi pi-fw pi-id-card',
+                                routerLink: ['/admin/project/fullstack']
+                            },
+                            {
+                                label: 'Web Scraping',
+                                icon: 'pi pi-fw pi-id-card',
+                                routerLink: ['/admin/project/web-scraping']
+                            }
+                        ]
+                    },
+                    {
+                        label: 'Customer',
+                        icon: 'pi pi-fw pi-id-card',
+                        routerLink: ['/admin/customer']
+                    },
+                    {
+                        label: 'Lisensi',
+                        icon: 'pi pi-fw pi-id-card',
+                        routerLink: ['/admin/lisensi']
                     }
                 ]
-            },
-            {
-                label: 'Project',
-                items: [
-                    { 
-                        label: 'Bot App', 
-                        icon: 'pi pi-fw pi-id-card',
-                        routerLink: ['/admin/project/bot-app']
-                    },
-                    { 
-                        label: 'Fullstack App', 
-                        icon: 'pi pi-fw pi-id-card',
-                        routerLink: ['/admin/project/fullstack-app']
-                    },
-                    { 
-                        label: 'MVC App', 
-                        icon: 'pi pi-fw pi-id-card',
-                        routerLink: ['/admin/project/mvc-app']
-                    },
-                ]
-            },
+            }
         ];
     }
 }

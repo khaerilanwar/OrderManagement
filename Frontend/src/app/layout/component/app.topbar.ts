@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
 import { MenuItem } from 'primeng/api';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { StyleClassModule } from 'primeng/styleclass';
 import { AppConfigurator } from './app.configurator';
 import { LayoutService } from '../service/layout.service';
+import { AuthService } from '../../services/admin/auth.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
     selector: 'app-topbar',
@@ -42,7 +44,7 @@ import { LayoutService } from '../service/layout.service';
                 <button type="button" class="layout-topbar-action" (click)="toggleDarkMode()">
                     <i [ngClass]="{ 'pi ': true, 'pi-moon': layoutService.isDarkTheme(), 'pi-sun': !layoutService.isDarkTheme() }"></i>
                 </button>
-                <button type="button" class="layout-topbar-action">
+                <button type="button" class="layout-topbar-action" (click)="logOut()">
                     <i class="pi pi-user"></i>
                     <span>Profile</span>
                 </button>
@@ -53,9 +55,23 @@ import { LayoutService } from '../service/layout.service';
 export class AppTopbar {
     items!: MenuItem[];
 
-    constructor(public layoutService: LayoutService) {}
+    constructor(
+        public layoutService: LayoutService,
+        private authService: AuthService,
+        private spinner: NgxSpinnerService,
+        private router: Router
+    ) {}
 
     toggleDarkMode() {
         this.layoutService.layoutConfig.update((state) => ({ ...state, darkTheme: !state.darkTheme }));
+    }
+
+    logOut() {
+        this.spinner.show();
+        this.authService.logOut().subscribe((resp: any) => {
+            this.spinner.hide();
+            localStorage.removeItem('token');
+            this.router.navigate(['/login']);
+        });
     }
 }

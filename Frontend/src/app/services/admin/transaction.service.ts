@@ -1,18 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../environments/environment.development';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class TransactionService {
-  urlEndpoint: string = environment.apiUrl + 'products'
+    constructor(private http: HttpClient) {}
 
-  constructor(
-    private http: HttpClient
-  ) { }
-
-  getAllCategories() {
-    return this.http.get(this.urlEndpoint)
-  }
+    getAllCategories() {
+        return this.http.get('/products');
+    }
 }

@@ -1,5 +1,7 @@
 export interface OrderCategory {
-    title: string;
+    id: string;
+    name: string;
     description: string;
-    price: number;
+    countOrder: number;
+    createdAt: string;
 }
