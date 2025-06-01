@@ -5,6 +5,7 @@ import customerSeeder from "./CustomerSeeder.js";
 import statusSeeder from "./StatusSeeder.js";
 import orderSeeder from "./OrderSeeder.js";
 import userSeeder from "./UserSeeder.js";
+import licenseSeeder from "./LicenseSeeder.js";
 
 async function main() {
     // Menjalankan seeder untuk user
@@ -26,6 +27,10 @@ async function main() {
     // Menjalankan seeder untuk order
     await orderSeeder(30);
     printLog("Order seeder completed successfully.");
+
+    // Menjalankan seeder untuk token license
+    await licenseSeeder(20)
+    printLog("License seeder completed successfully")
 }
 
 main()

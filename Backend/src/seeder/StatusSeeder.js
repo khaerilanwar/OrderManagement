@@ -1,3 +1,4 @@
+import { fakerID_ID } from "@faker-js/faker";
 import { prisma } from "../config/Database.js";
 import { printLog } from "../utils/Helper.js";
 
@@ -28,6 +29,7 @@ async function statusSeeder() {
             id: idx + 1,
             name: status_name[idx],
             detail: status_detail[idx],
+            description: fakerID_ID.lorem.sentences({ min: 1, max: 2 }),
             sequence: idx + 1,
             created_at: new Date(),
             updated_at: new Date(),

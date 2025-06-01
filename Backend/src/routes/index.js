@@ -4,6 +4,9 @@ import authRoute from "./AuthRoutes.js"
 import verifyToken from "../middleware/VerifyToken.js"
 import orderRoute from "./OrderRoutes.js"
 import statusRoute from "./StatusRoutes.js"
+import customerRoute from "./CustomerRoutes.js"
+import testimoniRoute from "./TestimoniRoutes.js"
+import licenseRoute from "./LicenseRoutes.js"
 
 const router = express.Router()
 router.get("/", (req, res) => {
@@ -14,6 +17,9 @@ router.use("/auth", authRoute)
 router.use("/category", verifyToken, categoryRoute)
 router.use('/order', verifyToken, orderRoute)
 router.use("/status", verifyToken, statusRoute)
+router.use("/customer", verifyToken, customerRoute)
+router.use("/testimoni", verifyToken, testimoniRoute)
+router.use("/license", verifyToken, licenseRoute)
 
 router.use((req, res) => {
     res.status(404).send("<h1>Your destination not found on the server</h1>")

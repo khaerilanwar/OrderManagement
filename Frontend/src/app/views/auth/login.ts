@@ -1,21 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Route, Router, RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
-import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { RippleModule } from 'primeng/ripple';
 import { AuthService } from '../../services/admin/auth.service';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { HttpErrorResponse, HttpHeaderResponse } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 
 @Component({
     selector: 'app-login',
     standalone: true,
-    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, ToastModule],
+    imports: [ButtonModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, ToastModule],
     template: `
         <p-toast class="font-medium" />
         <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
@@ -52,7 +51,7 @@ export class Login implements OnInit {
         private spinner: NgxSpinnerService,
         private messageService: MessageService,
         private router: Router
-    ) {}
+    ) { }
 
     ngOnInit(): void {
         if (this.authService.isAuthenticated()) {

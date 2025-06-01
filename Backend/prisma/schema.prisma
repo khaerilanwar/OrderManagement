@@ -11,19 +11,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-// Enum
-enum Role {
-  ADMIN
-  SUPERADMIN
-}
-
-enum ProjectKind {
-  BOT
-  MVC
-  FULLSTACK
+  url      = env("DATABASE_URL_TEST")
 }
 
 // Model
@@ -38,13 +26,15 @@ model User {
 }
 
 model Status {
-  id         Int      @id @default(autoincrement())
-  name       String   @unique
-  detail     String?
-  sequence   Int      @unique
-  orders     Order[]
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id             Int              @id @default(autoincrement())
+  name           String           @unique
+  detail         String?
+  description    String?
+  sequence       Int              @unique
+  orders         Order[]
+  created_at     DateTime         @default(now())
+  updated_at     DateTime         @updatedAt
+  TimelineStatus TimelineStatus[]
 }
 
 model Category {
@@ -57,26 +47,41 @@ model Category {
 }
 
 model Order {
-  id           String      @id @db.VarChar(10)
-  title        String
-  description  String?
-  down_payment Int?        @default(0)
-  invoice      Int
-  customer_id  String
-  status_id    Int
-  category_id  String
-  customer     Customer    @relation(fields: [customer_id], references: [id], onDelete: Cascade)
-  status       Status      @relation(fields: [status_id], references: [id], onDelete: Cascade)
-  category     Category    @relation(fields: [category_id], references: [id], onDelete: Cascade)
-  created_at   DateTime    @default(now())
-  updated_at   DateTime    @updatedAt
-  Testimoni    Testimoni[]
+  id             String           @id @db.VarChar(10)
+  title          String
+  description    String?
+  down_payment   Int?             @default(0)
+  invoice        Int
+  customer_id    String
+  status_id      Int
+  category_id    String
+  customer       Customer         @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+  status         Status           @relation(fields: [status_id], references: [id], onDelete: Cascade)
+  category       Category         @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  created_at     DateTime         @default(now())
+  updated_at     DateTime         @updatedAt
+  testimoni      Testimoni?
+  TimelineStatus TimelineStatus[]
+}
+
+model TimelineStatus {
+  id          String   @id @default(cuid())
+  sequence    Int
+  description String?
+  status_id   Int
+  order_id    String   @db.VarChar(10)
+  order       Order    @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  status      Status   @relation(fields: [status_id], references: [id], onDelete: Cascade)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 }
 
 model Customer {
   id           String      @id @default(cuid())
   name         String
-  whatsapp     String?
+  email        String?     @unique
+  phone        String?     @unique
+  whatsapp     String?     @unique
   telegram     String?
   address      String?
   count_orders Int?        @default(0)
@@ -84,6 +89,7 @@ model Customer {
   updated_at   DateTime    @updatedAt
   orders       Order[]
   testimoni    Testimoni[]
+  licenses     License[]
 }
 
 model Testimoni {
@@ -91,22 +97,46 @@ model Testimoni {
   rating      Int      @default(1)
   description String?
   status      Boolean  @default(false)
-  order_id    String   @db.VarChar(10)
+  order_id    String   @unique @db.VarChar(10)
   customer_id String
-  order       Order    @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  order       Order?   @relation(fields: [order_id], references: [id], onDelete: Cascade)
   customer    Customer @relation(fields: [customer_id], references: [id], onDelete: Cascade)
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 }
 
-model Project {
-  id          String      @id @default(cuid())
+model Product {
+  id          String          @id @default(cuid())
   name        String
   description String?
-  kind        ProjectKind
   image       String?
   video       String?
-  is_active   Boolean     @default(false)
-  created_at  DateTime    @default(now())
-  updated_at  DateTime    @updatedAt
+  category_id Int
+  category    ProductCategory @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  is_active   Boolean         @default(false)
+  created_at  DateTime        @default(now())
+  updated_at  DateTime        @updatedAt
+}
+
+model ProductCategory {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+  products    Product[]
+}
+
+model License {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  token       String    @unique
+  customer_id String
+  usage_limit Int?      @default(0)
+  used_count  Int?      @default(0)
+  expire_date DateTime?
+  customer    Customer  @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
 }

@@ -1,0 +1,137 @@
+<div class="card">
+    <p-table #dt1 [value]="tokenLicense" dataKey="id" [rows]="5" [rowHover]="true" [showGridlines]="true" [paginator]="true" [globalFilterFields]="['name', 'customer.name']" responsiveLayout="scroll">
+        <ng-template #caption>
+            <div class="flex justify-between items-center flex-column sm:flex-row">
+                <p-button icon="pi pi-plus" label="New Token" severity="info" (click)="onToggleDrawer()"></p-button>
+                <p-iconfield iconPosition="left" class="ml-auto">
+                    <p-inputicon>
+                        <i class="pi pi-search"></i>
+                    </p-inputicon>
+                    <input pInputText type="text" (input)="onGlobalFilter(dt1, $event)" placeholder="Search keyword" />
+                </p-iconfield>
+            </div>
+        </ng-template>
+        <ng-template #header>
+            <tr>
+                <th style="min-width: 2rem">
+                    <div class="flex justify-between items-center">#</div>
+                </th>
+                <th style="min-width: 12rem">
+                    <div class="flex justify-between items-center">Name</div>
+                </th>
+                <th style="min-width: 16rem">
+                    <div class="flex justify-between items-center">Customer</div>
+                </th>
+                <th style="min-width: 3rem">
+                    <div class="flex justify-between items-center">Used</div>
+                </th>
+                <th style="min-width: 3rem">
+                    <div class="flex justify-between items-center">Limit</div>
+                </th>
+                <th style="min-width: 3rem">
+                    <div class="flex justify-between items-center">Expire</div>
+                </th>
+                <th style="min-width: 3rem">
+                    <div class="flex justify-between items-center">Created</div>
+                </th>
+                <th style="min-width: 3rem">
+                    <div class="flex justify-between items-center">Action</div>
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-token let-i="rowIndex">
+            <tr>
+                <td>{{ i + 1 }}.</td>
+                <td>
+                    {{ token.name }}
+                </td>
+                <td>
+                    {{ token.customer.name }}
+                </td>
+                <td>
+                    {{ token.used_count }}
+                </td>
+                <td>
+                    {{ token.usage_limit }}
+                </td>
+                <td>
+                    {{ token.expire_date | date: 'yyyy-MM-dd' }}
+                </td>
+                <td>
+                    {{ token.created_at | date: 'yyyy-MM-dd' }}
+                </td>
+                <td>
+                    <p-button icon="pi pi-info" class="me-2" size="small" severity="info" (onClick)="onToggleModal('info', token.token)"></p-button>
+                    <p-button icon="pi pi-pencil" size="small" severity="warn" (onClick)="onToggleModal('edit', token.id)"></p-button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="8">No customers found.</td>
+            </tr>
+        </ng-template>
+        <ng-template #loadingbody>
+            <tr>
+                <td colspan="8">Loading customers data. Please wait.</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<p-dialog [header]="headerModal" [modal]="true" [(visible)]="displayModal" [style]="{ width: '30rem' }" [dismissableMask]="true" [closeOnEscape]="true">
+    @if (headerModal === 'License Edit') {
+        <div class="flex flex-col gap-2 mb-4">
+            <label for="change-limit" class="font-medium">Add Limit</label>
+            <p-inputnumber inputId="change-limit" [useGrouping]="false" [(ngModel)]="limitToken" />
+        </div>
+        <div class="flex flex-col gap-2 mb-4">
+            <label for="expiredate" class="font-medium">Expire Date</label>
+            <p-datepicker [showIcon]="true" [minDate]="minExpireDate" appendTo="body" [(ngModel)]="expireToken" inputId="expiredate" styleClass="w-full"></p-datepicker>
+        </div>
+        <div class="flex justify-end gap-2">
+            <p-button label="Cancel" severity="secondary" (click)="onToggleModal()" />
+            <p-button label="Save" (click)="changeLicense()" />
+        </div>
+    } @else if (headerModal === 'Token Info') {
+        <div class="mb-8 max-w-sm mx-auto">
+            <h4 class="font-semibold text-center text-2xl">Your Token</h4>
+            <p class="wrap-center">{{ infoToken }}</p>
+        </div>
+        <div class="flex justify-end gap-2">
+            <p-button label="OK" (onClick)="onToggleModal()" />
+        </div>
+    }
+</p-dialog>
+
+<p-drawer header="Create New Token" [(visible)]="displayDrawer" position="right" styleClass="!w-full md:!w-80 lg:!w-[30rem]">
+    <div class="flex flex-col gap-2 mb-4">
+        <label for="token-name" class="font-medium">Token Name</label>
+        <input pInputText id="token-name" [(ngModel)]="nameToken" class="flex-auto" />
+    </div>
+
+    <div class="flex flex-col gap-2 mb-4">
+        <label for="cust" class="font-medium">Customer</label>
+        <p-select [options]="customers" inputId="cust" [(ngModel)]="customerToken" optionLabel="name" [filter]="true" filterBy="name" [showClear]="true" placeholder="Select customer" class="w-full"> </p-select>
+    </div>
+
+    <div class="flex flex-col gap-2 mb-4">
+        <label for="expiredate" class="font-medium">Expire Date</label>
+        <p-datepicker [showIcon]="true" [minDate]="minExpireDate" [(ngModel)]="expireToken" inputId="expiredate" styleClass="w-full"></p-datepicker>
+    </div>
+
+    <div class="flex flex-col gap-2 mb-4">
+        <label for="usage-limit" class="font-medium">Usage Limit</label>
+        <p-inputnumber inputId="usage-limit" [useGrouping]="false" [(ngModel)]="limitToken" />
+    </div>
+
+    <div class="flex flex-col gap-2 mb-8">
+        <label for="description" class="font-semibold w-24">Description</label>
+        <textarea pTextarea rows="5" id="description" [(ngModel)]="descriptionToken"></textarea>
+    </div>
+
+    <div class="flex justify-end gap-2">
+        <p-button label="Clear" severity="secondary" (click)="onClearNewToken()" />
+        <p-button label="Create" (click)="createNewToken()" />
+    </div>
+</p-drawer>

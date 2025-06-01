@@ -111,3 +111,40 @@ export const logout = async (refreshToken) => {
         return { success: false, statusCode: 500, message: error.message || 'Internal server error!' }
     }
 }
+
+// public user
+export const customerAuth = async (credential) => {
+    try {
+        // Cek apakah credential pake email
+        const customer = await prisma.customer.findFirst({
+            where: {
+                OR: [
+                    { email: credential.toLowerCase() },
+                    { phone: credential.toLowerCase() }
+                ]
+            }
+        })
+
+        // jika data customer tidak ditemukan
+        if (!customer) return { success: false, statusCode: 404, message: "Pelanggan tidak ditemukan" }
+
+        // jika ada generate jwt
+        const accessToken = jwt.sign(
+            {
+                customerName: customer.name,
+                customerId: customer.id
+            },
+            process.env.ACCESS_KEY,
+            {
+                expiresIn: '2h',
+                audience: 'orderfe',
+                issuer: 'orderbe'
+            },
+        )
+
+        return { success: true, statusCode: 200, message: "Berhasil masuk!", data: { accessToken } }
+    }
+    catch (error) {
+        return { success: false, statusCode: 500, message: error.message || 'Internal server error!' }
+    }
+}

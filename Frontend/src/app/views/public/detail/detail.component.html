@@ -1,0 +1,113 @@
+<div class="card flex justify-center max-w-screen-lg mx-auto">
+    <p-panel [header]="'Pesanan : ' + order?.id" class="w-full">
+
+        @if (order?.status_id === 2) {
+            <p-button label="Sudah membayar" icon="pi pi-check" severity="info" class="mb-4" (onClick)="payConfirm()" />
+        }
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="max-w-4xl rounded-lg shadow-md p-4">
+                <h4 class="font-semibold text-2xl text-center mb-1">Detail Pesanan</h4>
+                <table class="text-base border-separate border-spacing-y-3">
+                    <tr>
+                        <td class="min-w-44 font-semibold">Nomor Pesanan</td>
+                        <td class="min-w-4">:</td>
+                        <td>{{ order?.id }}</td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold">Nama Pesanan</td>
+                        <td>:</td>
+                        <td>{{ order?.title }}</td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold">Kategori</td>
+                        <td>:</td>
+                        <td>{{ order?.category.name }}</td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold">Status Pesanan</td>
+                        <td>:</td>
+                        <td>
+                            <p-badge [severity]="
+                                                order?.status.name === 'Baru'
+                                                    ? 'info'
+                                                    : order?.status.name === 'Bayar'
+                                                      ? 'warn'
+                                                      : order?.status.name === 'Konfirmasi'
+                                                        ? 'secondary'
+                                                        : order?.status.name === 'Diproses'
+                                                          ? 'contrast'
+                                                          : order?.status.name === 'Selesai'
+                                                            ? 'success'
+                                                            : order?.status.name === 'Batal'
+                                                              ? 'danger'
+                                                              : 'secondary'
+                                            " [value]="order?.status.detail" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="vertical-align: top" class="font-semibold">Deskripsi</td>
+                        <td style="vertical-align: top">:</td>
+                        <td class="max-w-2xl">{{ order?.description }}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="max-w-4xl rounded-lg shadow-md p-4">
+                <h4 class="font-semibold text-2xl text-center mb-1">Detail Pembayaran</h4>
+                <table class="text-base border-separate border-spacing-y-3">
+                    <tr>
+                        <td class="min-w-44 font-semibold">Total Tagihan</td>
+                        <td class="min-w-4">:</td>
+                        <td>{{ order?.invoice | currency: 'Rp. ' : 'symbol' : '1.0' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold">Sudah Terbayarkan</td>
+                        <td class="min-w-4">:</td>
+                        <td>{{ order?.down_payment | currency: 'Rp. ' : 'symbol' : '1.0' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold">Kekurangan</td>
+                        <td class="min-w-4">:</td>
+                        <td>{{ order?.invoice - order?.down_payment < 0 ? 0 : (order?.invoice - order?.down_payment |
+                                currency: 'Rp. ' : 'symbol' : '1.0' ) }}</td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold">Status Tagihan</td>
+                        <td class="min-w-4">:</td>
+                        <td>
+                            <p-badge
+                                [value]="order?.down_payment >= order?.invoice ? 'Sudah Lunas' : order?.down_payment === 0 ? 'Belum Dibayar' : 'Belum Lunas'"
+                                [severity]="order?.down_payment >= order?.invoice ? 'success' : order?.down_payment === 0 ? 'danger' : 'warn'" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold">Tanggal Pesanan</td>
+                        <td class="min-w-4">:</td>
+                        <td>{{ order?.created_at | date: 'dd MMMM yyyy HH:mm' }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <h3 class="text-center mt-8 mb-6">Timeline Order</h3>
+
+        <p-timeline [value]="order?.TimelineStatus" align="alternate" styleClass="customized-timeline">
+            <ng-template #marker let-event>
+                <span class="flex w-8 h-8 items-center justify-center text-white rounded-full z-10 shadow-sm"
+                    [style]="{ 'background-color': getColorTimeline(event.status.detail) }">
+                    <i [class]="getIconTimeline(event.status.detail)"></i>
+                </span>
+            </ng-template>
+            <ng-template #content let-event>
+                <p-card [header]="event.status.detail" [subheader]="(event.created_at | date: 'dd-MM-yyyy hh:mm') ?? ''" >
+                    <p>
+                        {{ event.description ?? event.status.description }}
+                    </p>
+                </p-card>
+            </ng-template>
+        </p-timeline>
+    </p-panel>
+</div>
+
+<p-toast class="font-medium" />

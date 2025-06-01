@@ -1,4 +1,4 @@
-import { auth, createNewToken, logout } from "../services/AuthService.js"
+import { auth, createNewToken, customerAuth, logout } from "../services/AuthService.js"
 
 export const authenticate = async (req, res) => {
     try {
@@ -46,6 +46,19 @@ export const newAccessToken = async (req, res) => {
         const refreshToken = req.cookies.refreshToken
         if (!refreshToken) return res.status(401).json({ success: false, statusCode: 401, message: 'Unauthorized!' })
         const response = await createNewToken(refreshToken)
+
+        return res.status(response.statusCode).json(response)
+    }
+    catch (err) {
+        return res.status(500).json({ message: err.message || "Internal server error." })
+    }
+}
+
+// public user
+export const customerLogin = async (req, res) => {
+    try {
+        const { credential } = req.body
+        const response = await customerAuth(credential)
 
         return res.status(response.statusCode).json(response)
     }

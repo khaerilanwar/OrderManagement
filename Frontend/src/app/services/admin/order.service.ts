@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
     providedIn: 'root'
 })
 export class OrderService {
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) { }
 
     getListOrders() {
         return this.http.get('/order');
@@ -21,5 +21,13 @@ export class OrderService {
 
     editInvoice(id: string, data: any) {
         return this.http.put(`/order/invoice/${id}`, data);
+    }
+
+    deleteOrder(id: string) {
+        return this.http.delete(`/order/${id}`);
+    }
+
+    customerPayConfirm(orderId: string) {
+        return this.http.patch(`/order/customer/${orderId}`, {});
     }
 }

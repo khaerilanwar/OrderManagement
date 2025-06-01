@@ -35,7 +35,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
                         />
                     </g>
                 </svg>
-                <span>SAKAI</span>
+                <span>SIPRODIG</span>
             </a>
         </div>
 
@@ -60,7 +60,7 @@ export class AppTopbar {
         private authService: AuthService,
         private spinner: NgxSpinnerService,
         private router: Router
-    ) {}
+    ) { }
 
     toggleDarkMode() {
         this.layoutService.layoutConfig.update((state) => ({ ...state, darkTheme: !state.darkTheme }));

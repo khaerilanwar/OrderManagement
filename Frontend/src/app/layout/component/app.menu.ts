@@ -73,7 +73,7 @@ export class AppMenu {
                     {
                         label: 'Lisensi',
                         icon: 'pi pi-fw pi-id-card',
-                        routerLink: ['/admin/lisensi']
+                        routerLink: ['/admin/customer/license']
                     }
                 ]
             }

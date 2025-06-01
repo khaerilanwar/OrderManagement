@@ -62,5 +62,5 @@ import { ButtonModule } from 'primeng/button';
         </div> `
 })
 export class TopbarWidget {
-    constructor(public router: Router) {}
+    constructor(public router: Router) { }
 }

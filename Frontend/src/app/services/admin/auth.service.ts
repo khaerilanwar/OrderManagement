@@ -37,4 +37,20 @@ export class AuthService {
         const decodedToken = jwtDecode(token);
         return token ? decodedToken : null;
     }
+
+    // user public
+    customerLogin(credential: string) {
+        return this.http.post('/auth/customer-login', { credential });
+    }
+
+    customerRegister(name: string, email: string, address: string, phone: string, hasWhatsapp: boolean) {
+        return this.http.post('/auth/customer-register', { name, email, address, phone, hasWhatsapp });
+    }
+
+    isAuthCustomer() {
+        const customerToken = localStorage.getItem('token');
+        if (!customerToken) return false;
+
+        return true;
+    }
 }

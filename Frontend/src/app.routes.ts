@@ -1,21 +1,20 @@
 import { Routes } from '@angular/router';
 import { AppLayout } from './app/layout/component/app.layout';
 import { Dashboard } from './app/pages/dashboard/dashboard';
-import { Landing } from './app/pages/landing/landing';
 import { Notfound } from './app/pages/notfound/notfound';
-import { HomeComponent } from './app/views/public/home/home.component';
 import { Login } from './app/views/auth/login';
 import { authGuard } from './app/guards/auth.guard';
+import { Landing } from './app/layout/landing/landing';
+import { PublicLogin } from './app/views/auth/public-login';
+import { PublicRegist } from './app/views/auth/public-regist';
 
 export const appRoutes: Routes = [
     // public
     {
         path: '',
-        component: MainLayoutComponent,
+        component: Landing,
         children: [
-            { path: '', component: HomeComponent },
-            { path: 'bot-app', loadChildren: () => import('./app/views/public/bot-app/bot.routes') },
-            { path: 'web-app', loadChildren: () => import('./app/views/public/web-app/web.routes') }
+            { path: '', loadChildren: () => import('./app/views/public/public.routes') }
         ]
     },
     // admin
@@ -26,9 +25,14 @@ export const appRoutes: Routes = [
         children: [
             { path: '', component: Dashboard },
             { path: 'order', loadChildren: () => import('./app/views/admin/transaction/transaction.routes') },
-            { path: 'project', loadChildren: () => import('./app/views/admin/project/project.routes') }
+            { path: 'project', loadChildren: () => import('./app/views/admin/project/project.routes') },
+            { path: 'customer', loadChildren: () => import('./app/views/admin/customer/customer.routes') },
         ]
     },
+    // public
+    { path: 'masuk', component: PublicLogin },
+    { path: 'daftar', component: PublicRegist },
+    // admin
     { path: 'login', component: Login },
     { path: 'landing', component: Landing },
     { path: 'notfound', component: Notfound },

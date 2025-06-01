@@ -1,4 +1,4 @@
-import { fakerID_ID } from "@faker-js/faker";
+import { faker, fakerID_ID } from "@faker-js/faker";
 import { printLog } from "../utils/Helper.js";
 import { prisma } from "../config/Database.js";
 
@@ -11,6 +11,8 @@ async function customerSeeder(length = 30) {
         // Membuat 10 kategori baru
         const customers = Array.from({ length }, () => ({
             name: fakerID_ID.person.fullName(),
+            email: fakerID_ID.internet.email().toLowerCase(),
+            phone: fakerID_ID.phone.number(),
             telegram: fakerID_ID.book.genre(),
             whatsapp: fakerID_ID.phone.number(),
             address: fakerID_ID.location.streetAddress(),
