@@ -175,14 +175,14 @@ export const createCustomerOrder = async (orderData) => {
         if (!category) return { success: false, statusCode: 404, message: "Category not found!" };
 
         const maxOrder = Number(
-            (await prisma.order.aggregate({ _max: { id: true } }))._max.id
+            (await prisma.order.aggregate({ _max: { id: true } }))._max.id.slice(-4)
         );
         const newOrderId = moment().format("YYYYMM") + (maxOrder + 1).toString().padStart(4, '0')
 
         // Create new order
         const newOrder = await prisma.order.create({
             data: {
-                id: String(newOrderId),
+                id: newOrderId,
                 title: orderName,
                 description: orderDescription,
                 invoice: 0,

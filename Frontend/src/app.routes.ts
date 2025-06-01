@@ -25,7 +25,7 @@ export const appRoutes: Routes = [
         children: [
             { path: '', component: Dashboard },
             { path: 'order', loadChildren: () => import('./app/views/admin/transaction/transaction.routes') },
-            { path: 'project', loadChildren: () => import('./app/views/admin/project/project.routes') },
+            { path: 'product', loadChildren: () => import('./app/views/admin/product/product.routes') },
             { path: 'customer', loadChildren: () => import('./app/views/admin/customer/customer.routes') },
         ]
     },

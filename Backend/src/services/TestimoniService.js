@@ -33,3 +33,18 @@ export const createTestimoni = async (orderId, customerId, data) => {
         return { success: false, statusCode: 500, message: error.message || 'Internal server error!' }
     }
 }
+
+export const getTestimoni = async () => {
+    try {
+        const data = await prisma.testimoni.findMany({
+            include: {
+                customer: true
+            }
+        })
+
+        return { success: true, statusCode: 200, message: "Berhasil mendapatkan testimoni!", data }
+    }
+    catch (error) {
+        return { success: false, statusCode: 500, message: error.message || 'Internal server error!' }
+    }
+}

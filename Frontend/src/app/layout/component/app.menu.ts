@@ -45,23 +45,18 @@ export class AppMenu {
                         ]
                     },
                     {
-                        label: 'Project',
+                        label: 'Product',
                         icon: 'pi pi-fw pi-id-card',
                         items: [
                             {
-                                label: 'Bot',
+                                label: 'Product List',
                                 icon: 'pi pi-fw pi-id-card',
-                                routerLink: ['/admin/project/bot']
+                                routerLink: ['/admin/product/list']
                             },
                             {
-                                label: 'Fullstack',
+                                label: 'Product Category',
                                 icon: 'pi pi-fw pi-id-card',
-                                routerLink: ['/admin/project/fullstack']
-                            },
-                            {
-                                label: 'Web Scraping',
-                                icon: 'pi pi-fw pi-id-card',
-                                routerLink: ['/admin/project/web-scraping']
+                                routerLink: ['/admin/product/category']
                             }
                         ]
                     },

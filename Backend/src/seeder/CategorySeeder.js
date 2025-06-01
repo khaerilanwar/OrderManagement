@@ -8,13 +8,47 @@ async function categorySeeder(length = 10) {
         await prisma.category.deleteMany({});
         printLog("Deleted all categories.");
 
+        const productCategoryId = await prisma.productCategory.findMany({ select: { id: true } })
+
+
         // Membuat 10 kategori baru
-        const categories = Array.from({ length }, () => ({
-            name: fakerID_ID.lorem.word(),
-            description: fakerID_ID.lorem.sentence({ min: 3, max: 6 }),
-            created_at: new Date(),
-            updated_at: new Date(),
-        }));
+        const categories = [
+            {
+                name: 'Pembuatan Bot',
+                description: 'Kategori untuk pembuatan bot',
+                product_category_id: fakerID_ID.helpers.arrayElement(productCategoryId).id,
+                created_at: new Date(),
+                updated_at: new Date()
+            },
+            {
+                name: 'Pembuatan Web',
+                description: 'Kategori untuk pembuatan web',
+                product_category_id: fakerID_ID.helpers.arrayElement(productCategoryId).id,
+                created_at: new Date(),
+                updated_at: new Date()
+            },
+            {
+                name: 'Lisensi Bot',
+                description: 'Kategori untuk pembelian lisensi bot',
+                product_category_id: fakerID_ID.helpers.arrayElement(productCategoryId).id,
+                created_at: new Date(),
+                updated_at: new Date()
+            },
+            {
+                name: 'Lisensi Web',
+                description: 'Kategori untuk pembelian lisensi web',
+                product_category_id: fakerID_ID.helpers.arrayElement(productCategoryId).id,
+                created_at: new Date(),
+                updated_at: new Date()
+            },
+            {
+                name: 'Pembuatan UI/UX',
+                description: 'Kategori untuk pembuatan UI/UX',
+                product_category_id: fakerID_ID.helpers.arrayElement(productCategoryId).id,
+                created_at: new Date(),
+                updated_at: new Date()
+            },
+        ]
 
         await prisma.category.createMany({ data: categories });
         printLog(`Created ${length} new categories.`);

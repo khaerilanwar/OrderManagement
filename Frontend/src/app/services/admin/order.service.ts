@@ -30,4 +30,24 @@ export class OrderService {
     customerPayConfirm(orderId: string) {
         return this.http.patch(`/order/customer/${orderId}`, {});
     }
+
+    getAllProducts() {
+        return this.http.get('/product');
+    }
+
+    getAllProductCategories() {
+        return this.http.get('/product/category');
+    }
+
+    getDataDashboard() {
+        return this.http.get('/dashboard');
+    }
+
+    createProductCategory(data: any) {
+        return this.http.post('/product/category', data);
+    }
+
+    deleteProductCategory(id: string) {
+        return this.http.delete(`/product/category/${id}`);
+    }
 }

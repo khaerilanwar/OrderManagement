@@ -1,7 +1,6 @@
 <div class="card">
-    <p-table #dt1 [value]="orderCategories" dataKey="id" [rows]="5" [rowHover]="true" [showGridlines]="true"
-        [paginator]="orderCategories.length > 5" [globalFilterFields]="['name', 'description']"
-        responsiveLayout="scroll">
+    <p-table #dt1 [value]="productCategories" dataKey="id" [rows]="5" [rowHover]="true" [showGridlines]="true"
+        [paginator]="true" [globalFilterFields]="['name', 'description']" responsiveLayout="scroll">
         <ng-template #caption>
             <div class="flex justify-between items-center flex-column sm:flex-row">
                 <p-button icon="pi pi-plus" label="New Category" severity="info" (click)="onOpenNewModal()"></p-button>
@@ -18,17 +17,14 @@
                 <th style="min-width: 2rem">
                     <div class="flex justify-between items-center">#</div>
                 </th>
-                <th style="min-width: 8rem">
+                <th style="min-width: 12rem">
                     <div class="flex justify-between items-center">Name</div>
                 </th>
                 <th style="min-width: 16rem">
                     <div class="flex justify-between items-center">Description</div>
                 </th>
-                <th style="min-width: 6rem">
-                    <div class="flex justify-between items-center">Product</div>
-                </th>
                 <th style="min-width: 3rem">
-                    <div class="flex justify-between items-center">Total</div>
+                    <div class="flex justify-between items-center">Product</div>
                 </th>
                 <th style="min-width: 6rem">
                     <div class="flex justify-between items-center">Created</div>
@@ -48,19 +44,15 @@
                     {{ category.description }}
                 </td>
                 <td>
-                    {{ category.product_category.name }}
-                </td>
-                <td>
-                    {{ category.orders.length }}
+                    {{ category.products.length }}
                 </td>
                 <td>
                     {{ category.created_at | date: 'yyyy-MM-dd hh:mm' }}
                 </td>
                 <td class="gap-3">
-                    <p-button icon="pi pi-pencil" class="me-2" severity="warn"
-                        (click)="onOpenEditModal(category.id)"></p-button>
+                    <p-button icon="pi pi-pencil" class="me-2" severity="warn"></p-button>
                     <p-button icon="pi pi-trash" severity="danger"
-                        (click)="onConfirmDelete($event, category)"></p-button>
+                        (onClick)="deleteProductCategory(category.id)"></p-button>
                 </td>
             </tr>
         </ng-template>
@@ -82,22 +74,14 @@
     [dismissableMask]="true" [closeOnEscape]="true" position="top">
     <div class="flex flex-col gap-2 mb-4">
         <label for="username" class="font-semibold w-24">Name <span class="text-red-500">*</span></label>
-        <input pInputText id="username" class="flex-auto" autocomplete="off" [(ngModel)]="categoryInput.name" />
+        <input pInputText id="username" class="flex-auto" autocomplete="off" [(ngModel)]="newCategoryName" />
     </div>
-    @if (headerModal === "New Category") {
-    <div class="flex flex-col gap-2 mb-4">
-        <label for="product-category" class="font-medium">Category</label>
-        <p-select [options]="productCategories" inputId="product-category" optionLabel="name"
-            [(ngModel)]="selectedProductCategory" placeholder="Select product" class="w-full">
-        </p-select>
-    </div>
-    }
     <div class="flex flex-col gap-2 mb-8">
         <label for="description" class="font-semibold w-24">Description</label>
-        <textarea pTextarea rows="4" id="description" [(ngModel)]="categoryInput.description"></textarea>
+        <textarea pTextarea rows="4" id="description" [(ngModel)]="newCategoryDescription"></textarea>
     </div>
     <div class="flex justify-end gap-2">
         <p-button label="Cancel" severity="secondary" (click)="onToggleModal()" />
-        <p-button label="Save" (click)="onSaveCategory()" />
+        <p-button label="Save" (onClick)="onSaveProductCategory()" />
     </div>
 </p-dialog>

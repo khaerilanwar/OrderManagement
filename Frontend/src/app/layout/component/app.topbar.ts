@@ -3,7 +3,6 @@ import { MenuItem } from 'primeng/api';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { StyleClassModule } from 'primeng/styleclass';
-import { AppConfigurator } from './app.configurator';
 import { LayoutService } from '../service/layout.service';
 import { AuthService } from '../../services/admin/auth.service';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -45,7 +44,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
                     <i [ngClass]="{ 'pi ': true, 'pi-moon': layoutService.isDarkTheme(), 'pi-sun': !layoutService.isDarkTheme() }"></i>
                 </button>
                 <button type="button" class="layout-topbar-action" (click)="logOut()">
-                    <i class="pi pi-user"></i>
+                    <i class="pi pi-sign-out"></i>
                     <span>Profile</span>
                 </button>
             </div>

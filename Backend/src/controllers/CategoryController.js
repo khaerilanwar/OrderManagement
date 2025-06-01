@@ -12,9 +12,9 @@ export const getAllCategories = async (req, res) => {
 
 export const postNewCategory = async (req, res) => {
     try {
-        const { name, description } = req.body
+        const { name, description, productCategoryId } = req.body
 
-        const response = await createNewCategory(name, description)
+        const response = await createNewCategory(name, description, productCategoryId)
         if (!response.success) return res.status(response.statusCode).json({ message: response.message })
 
         return res.status(response.statusCode).json(response)

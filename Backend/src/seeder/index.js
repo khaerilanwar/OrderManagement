@@ -6,11 +6,17 @@ import statusSeeder from "./StatusSeeder.js";
 import orderSeeder from "./OrderSeeder.js";
 import userSeeder from "./UserSeeder.js";
 import licenseSeeder from "./LicenseSeeder.js";
+import productSeeder from "./ProductSeeder.js";
+import testimoniSeeder from "./TestimoniSeeder.js";
 
 async function main() {
     // Menjalankan seeder untuk user
     await userSeeder(6);
     printLog("User seeder completed successfully.")
+
+    // Menjalankan seeder untuk produk
+    await productSeeder(9);
+    printLog("Product seeder completed successfully.");
 
     // Menjalankan seeder untuk kategori
     await categorySeeder(10);
@@ -31,6 +37,10 @@ async function main() {
     // Menjalankan seeder untuk token license
     await licenseSeeder(20)
     printLog("License seeder completed successfully")
+
+    // Menjalankan seeder untuk testimoni
+    await testimoniSeeder();
+    printLog("Testimoni seeder completed successfully.");
 }
 
 main()

@@ -16,7 +16,7 @@ async function orderSeeder(length = 30) {
         // Membuat 10 kategori baru
         const orders = Array.from({ length }, (_, index) => ({
             id: moment().format("YYYYMM") + (index + 1).toString().padStart(4, '0'),
-            title: fakerID_ID.lorem.sentence({ min: 3, max: 6 }),
+            title: fakerID_ID.lorem.words({ min: 2, max: 4 }),
             description: fakerID_ID.lorem.sentences({ min: 2, max: 5 }),
             down_payment: fakerID_ID.number.int({ min: 50000, max: 200000 }),
             invoice: fakerID_ID.number.int({ min: 150000, max: 500000 }),

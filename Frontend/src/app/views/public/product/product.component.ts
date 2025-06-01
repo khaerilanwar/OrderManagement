@@ -6,6 +6,7 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { TagModule } from 'primeng/tag';
 import { Product, ProductService } from '../../../pages/service/product.service';
 import { CommonModule } from '@angular/common';
+import { OrderService } from '../../../services/public/order.service';
 
 @Component({
   selector: 'app-product',
@@ -16,25 +17,29 @@ import { CommonModule } from '@angular/common';
 })
 export class ProductComponent implements OnInit {
   products: any[] = [];
-  stateOptions: any[] = [
-    { label: 'All', value: 'all' },
-    { label: 'Bot', value: 'bot' },
-    { label: 'Web', value: 'web' },
-    { label: 'Design', value: 'design' }
-  ];
-  value: string = 'all';
+  // stateOptions: any[] = [
+  //   { label: 'All', value: 'all' },
+  //   { label: 'Bot', value: 'bot' },
+  //   { label: 'Web', value: 'web' },
+  //   { label: 'Design', value: 'design' }
+  // ];
+  // value: string = 'all';
 
-  constructor(private productService: ProductService) { }
+  constructor(
+    private orderService: OrderService
+  ) { }
 
   ngOnInit(): void {
-    this.products = [
-      { name: 'Web Scraping', category: 'BOT', image: 'dinkes bayi ori.png' },
-      { name: 'Aplikasi Web', category: 'WEB', image: 'gaptech ori.png' },
-      { name: 'Point of Sales', category: 'WEB', image: 'histore ori.png' },
-      { name: 'Bot Facebook', category: 'BOT', image: 'bot fb.png' },
-      { name: 'Web Infografis', category: 'WEB', image: 'infografis original.png' },
-      { name: 'Aplikasi WMS', category: 'WEB', image: 'gaptech ori.png' },
-    ]
+    this.getAllProducts();
+
+    // this.products = [
+    //   { name: 'Web Scraping', category: 'BOT', image: 'dinkes bayi ori.png' },
+    //   { name: 'Aplikasi Web', category: 'WEB', image: 'gaptech ori.png' },
+    //   { name: 'Point of Sales', category: 'WEB', image: 'histore ori.png' },
+    //   { name: 'Bot Facebook', category: 'BOT', image: 'bot fb.png' },
+    //   { name: 'Web Infografis', category: 'WEB', image: 'infografis original.png' },
+    //   { name: 'Aplikasi WMS', category: 'WEB', image: 'gaptech ori.png' },
+    // ]
   }
 
   getSeverity(product: Product) {
@@ -51,6 +56,14 @@ export class ProductComponent implements OnInit {
       default:
         return 'info';
     }
+  }
+
+  getAllProducts() {
+    this.orderService.getAllProducts().subscribe(
+      (res: any) => {
+        this.products = res.data
+      }
+    )
   }
 
 }

@@ -6,9 +6,11 @@ export const allCategories = async () => {
         const data = (await prisma.category.findMany({
             orderBy: [{ created_at: "desc" }, { name: "asc" }],
             include: {
-                orders: true
+                orders: true,
+                product_category: true
             }
-        })).map((item) => new CategoryDTO(item))
+        }))
+        // .map((item) => new CategoryDTO(item))
 
         return { success: true, statusCode: 200, data };
 
@@ -17,7 +19,7 @@ export const allCategories = async () => {
     }
 }
 
-export const createNewCategory = async (name, description) => {
+export const createNewCategory = async (name, description, productCategoryId) => {
     try {
         // Cek apakah category sudah ada
         const existCategory = await prisma.category.findFirst({
@@ -31,6 +33,7 @@ export const createNewCategory = async (name, description) => {
         await prisma.category.create({
             data: {
                 name, description,
+                product_category_id: productCategoryId,
                 created_at: new Date(),
                 updated_at: new Date()
             }

@@ -1,40 +1,37 @@
 import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
 import { MenuModule } from 'primeng/menu';
 import { PanelModule } from 'primeng/panel';
+import { RatingModule } from 'primeng/rating';
+import { OrderService } from '../../../services/public/order.service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-testimoni',
-  imports: [PanelModule, AvatarModule, ButtonModule, MenuModule],
+  imports: [PanelModule, RatingModule, FormsModule, ButtonModule, MenuModule, DatePipe],
   templateUrl: './testimoni.component.html',
   styleUrl: './testimoni.component.scss'
 })
 export class TestimoniComponent implements OnInit {
-  items: { label?: string; icon?: string; separator?: boolean }[] = [];
 
-  cek: string[] = ['1', '2', '3'];
+  testimoni: any[] = []
+  rating: number = 5;
 
-  constructor() { }
+  constructor(
+    private orderService: OrderService
+  ) { }
 
   ngOnInit(): void {
-    this.items = [
-      {
-        label: 'Refresh',
-        icon: 'pi pi-refresh'
-      },
-      {
-        label: 'Search',
-        icon: 'pi pi-search'
-      },
-      {
-        separator: true
-      },
-      {
-        label: 'Delete',
-        icon: 'pi pi-times'
-      }
-    ];
+    this.getAllTestimoni();
+  }
 
+  getAllTestimoni() {
+    this.orderService.getAllTestimoniOrders().subscribe(
+      (res: any) => {
+        this.testimoni = res.data;
+      }
+    )
   }
 }

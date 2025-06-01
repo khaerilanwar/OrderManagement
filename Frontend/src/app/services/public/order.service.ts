@@ -31,4 +31,12 @@ export class OrderService {
       { customerId, rating, testimoni }
     )
   }
+
+  getAllTestimoniOrders() {
+    return this.http.get('/testimoni')
+  }
+
+  getAllProducts() {
+    return this.http.get('/product');
+  }
 }

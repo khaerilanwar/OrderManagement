@@ -16,10 +16,12 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { AuthService } from '../../../../services/admin/auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { OrderService } from '../../../../services/admin/order.service';
+import { SelectModule } from 'primeng/select';
 
 @Component({
     selector: 'app-order-category',
-    imports: [TableModule, ToastModule, ConfirmDialogModule, TextareaModule, CommonModule, ButtonModule, IconFieldModule, InputIconModule, InputTextModule, DialogModule, FormsModule],
+    imports: [TableModule, ToastModule, SelectModule, ConfirmDialogModule, TextareaModule, CommonModule, ButtonModule, IconFieldModule, InputIconModule, InputTextModule, DialogModule, FormsModule],
     templateUrl: './order-category.component.html',
     styleUrl: './order-category.component.scss',
     providers: [ConfirmationService]
@@ -29,17 +31,21 @@ export class OrderCategoryComponent implements OnInit {
     isLoadOrderCategory: boolean = false;
 
     // Dialog
+    selectedProductCategory: any;
     headerModal: string = 'New Category';
     displayModal: boolean = false;
-    categoryInput: any = { id: '', name: '', description: '' };
+    categoryInput: any = { id: '', name: '', description: '', productCategory: '' };
+
+    productCategories: any[] = [];
 
     constructor(
         private spinner: NgxSpinnerService,
         private categoryService: CategoryService,
+        private orderService: OrderService,
         private messageService: MessageService,
         private confirmationService: ConfirmationService,
         private authService: AuthService
-    ) {}
+    ) { }
 
     ngOnInit(): void {
         this.getAllCategories();
@@ -115,7 +121,7 @@ export class OrderCategoryComponent implements OnInit {
         if (this.headerModal === 'New Category') {
             this.spinner.show();
             const { name, description } = this.categoryInput;
-            this.categoryService.postNewCategory({ name, description }).subscribe(
+            this.categoryService.postNewCategory({ name, description, productCategoryId: this.selectedProductCategory.id }).subscribe(
                 (res: any) => {
                     this.spinner.hide();
                     this.onToggleModal();
@@ -173,5 +179,11 @@ export class OrderCategoryComponent implements OnInit {
             this.orderCategories = response.data;
             this.isLoadOrderCategory = false;
         });
+
+        this.orderService.getAllProductCategories().subscribe(
+            (res: any) => {
+                this.productCategories = res.data;
+            }
+        )
     }
 }
