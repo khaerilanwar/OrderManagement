@@ -5,7 +5,8 @@ export const getProducts = async () => {
         const data = await prisma.product.findMany({
             include: {
                 category: true
-            }
+            },
+            orderBy: [{ created_at: "desc" }]
         })
 
         return { success: true, statusCode: 200, message: "Products retrieved successfully.", data }
@@ -61,7 +62,8 @@ export const getProductCategories = async () => {
         const data = await prisma.productCategory.findMany({
             include: {
                 products: true
-            }
+            },
+            orderBy: [{ name: "asc" }, { created_at: "desc" }]
         })
 
         return { success: true, statusCode: 200, message: "Product categories retrieved successfully.", data }

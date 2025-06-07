@@ -50,7 +50,7 @@ export class OrderDetailComponent implements OnInit {
         private orderService: OrderService,
         private statusService: StatusService,
         private messageService: MessageService
-    ) {}
+    ) { }
 
     ngOnInit(): void {
         this.orderId = this.route.snapshot.params['id'];
@@ -96,6 +96,7 @@ export class OrderDetailComponent implements OnInit {
     onOpenModal(type: string) {
         this.toggleModal();
         this.headerModal = type === 'order' ? 'Edit Order' : 'Edit Invoice';
+        this.amountPaid = 0
     }
 
     onSaveModal() {

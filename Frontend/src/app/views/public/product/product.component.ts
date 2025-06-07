@@ -7,6 +7,7 @@ import { TagModule } from 'primeng/tag';
 import { Product, ProductService } from '../../../pages/service/product.service';
 import { CommonModule } from '@angular/common';
 import { OrderService } from '../../../services/public/order.service';
+import { Database } from '@angular/fire/database';
 
 @Component({
   selector: 'app-product',
@@ -26,7 +27,8 @@ export class ProductComponent implements OnInit {
   // value: string = 'all';
 
   constructor(
-    private orderService: OrderService
+    private orderService: OrderService,
+    private database: Database
   ) { }
 
   ngOnInit(): void {

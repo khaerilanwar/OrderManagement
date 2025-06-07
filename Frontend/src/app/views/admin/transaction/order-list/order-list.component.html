@@ -1,22 +1,12 @@
 <div class="card">
-    <p-table
-        #dt
-        [value]="orders"
-        dataKey="id"
-        [rows]="10"
-        [rowHover]="true"
-        [rowsPerPageOptions]="[5, 10, 20]"
-        [showGridlines]="true"
-        [paginator]="true"
-        [globalFilterFields]="['title', 'customer', 'id', 'status']"
-        responsiveLayout="scroll"
-        selectionMode="single"
-        (onRowSelect)="onRowSelect($event)"
-        [(selection)]="selectedOrder"
-    >
+    <p-table #dt [value]="orders" dataKey="id" [rows]="10" [rowHover]="true" [rowsPerPageOptions]="[5, 10, 20]"
+        [showGridlines]="true" [paginator]="true" [globalFilterFields]="['title', 'customer', 'id', 'status']"
+        responsiveLayout="scroll" selectionMode="single" (onRowSelect)="onRowSelect($event)"
+        [(selection)]="selectedOrder">
         <ng-template #caption>
             <div class="flex justify-between items-center flex-column sm:flex-row">
-                <button pButton label="Clear" class="p-button-outlined mb-2" icon="pi pi-filter-slash" (click)="clear(dt)"></button>
+                <button pButton label="Clear" class="p-button-outlined mb-2" icon="pi pi-filter-slash"
+                    (click)="clear(dt)"></button>
                 <p-iconfield iconPosition="left" class="ml-auto">
                     <p-inputicon>
                         <i class="pi pi-search"></i>
@@ -30,19 +20,22 @@
                 <th>
                     <div class="flex justify-between items-center">
                         ID
-                        <p-columnFilter type="text" field="id" display="menu" placeholder="Search by ID"></p-columnFilter>
+                        <p-columnFilter type="text" field="id" display="menu"
+                            placeholder="Search by ID"></p-columnFilter>
                     </div>
                 </th>
                 <th style="min-width: 10rem">
                     <div class="flex justify-between items-center">
                         Order
-                        <p-columnFilter type="text" field="title" display="menu" placeholder="Search by order"></p-columnFilter>
+                        <p-columnFilter type="text" field="title" display="menu"
+                            placeholder="Search by order"></p-columnFilter>
                     </div>
                 </th>
                 <th style="min-width: 10rem">
                     <div class="flex justify-between items-center">
                         Customer
-                        <p-columnFilter type="text" field="cutomer" display="menu" placeholder="Search by customer"></p-columnFilter>
+                        <p-columnFilter type="text" field="cutomer" display="menu"
+                            placeholder="Search by customer"></p-columnFilter>
                     </div>
                 </th>
                 <th style="min-width: 10rem">
@@ -50,9 +43,11 @@
                         Category
                         <p-columnFilter field="category" matchMode="equals" display="menu">
                             <ng-template #filter let-value let-filter="filterCallback">
-                                <p-select [ngModel]="value" [options]="categories" (onChange)="filter($event.value)" placeholder="Any" [style]="{ 'min-width': '12rem' }">
+                                <p-select [ngModel]="value" [options]="categories" (onChange)="filter($event.value)"
+                                    placeholder="Any" [style]="{ 'min-width': '12rem' }">
                                     <ng-template let-option #item>
-                                        <span [class]="'customer-badge status-' + option.value">{{ option.label }}</span>
+                                        <span [class]="'customer-badge status-' + option.value">{{ option.label
+                                            }}</span>
                                     </ng-template>
                                 </p-select>
                             </ng-template>
@@ -70,9 +65,11 @@
                         Status
                         <p-columnFilter field="status" matchMode="equals" display="menu">
                             <ng-template #filter let-value let-filter="filterCallback">
-                                <p-select [ngModel]="value" [options]="statuses" (onChange)="filter($event.value)" placeholder="Any" [style]="{ 'min-width': '12rem' }">
+                                <p-select [ngModel]="value" [options]="statuses" (onChange)="filter($event.value)"
+                                    placeholder="Any" [style]="{ 'min-width': '12rem' }">
                                     <ng-template let-option #item>
-                                        <span [class]="'customer-badge status-' + option.value">{{ option.label }}</span>
+                                        <span [class]="'customer-badge status-' + option.value">{{ option.label
+                                            }}</span>
                                     </ng-template>
                                 </p-select>
                             </ng-template>
@@ -82,7 +79,8 @@
                 <th style="min-width: 10rem">
                     <div class="flex justify-between items-center">
                         Date
-                        <p-columnFilter type="date" field="createdAt" display="menu" placeholder="yyyy-mm-dd"></p-columnFilter>
+                        <p-columnFilter type="date" field="createdAt" display="menu"
+                            placeholder="yyyy-mm-dd"></p-columnFilter>
                     </div>
                 </th>
             </tr>
@@ -105,7 +103,8 @@
                     {{ order.invoice | currency: 'Rp. ' : 'symbol' : '1.0' }}
                 </td>
                 <td>
-                    <p-tag [value]="order.status" [severity]="getSeverity(order.status)" styleClass="dark:!bg-surface-900" />
+                    <p-tag [value]="order.status" [severity]="getSeverity(order.status)"
+                        styleClass="dark:!bg-surface-900" />
                 </td>
                 <td>
                     {{ order.createdAt | date: 'dd MMM yyyy' }}

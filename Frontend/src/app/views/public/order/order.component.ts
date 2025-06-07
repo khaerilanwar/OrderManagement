@@ -56,6 +56,10 @@ export class OrderComponent {
     this.getCategories();
   }
 
+  redirectChatPage() {
+    this.router.navigate(['/chat']);
+  }
+
   onToggleModal(type: string) {
     if (type === 'order') this.displayModal = !this.displayModal;
     if (type === 'testi') this.testiModal = !this.testiModal
@@ -118,6 +122,7 @@ export class OrderComponent {
         this.rating = 0;
         this.testimoni = '';
         this.onToggleModal('testi');
+        this.getListOrderCustomer();
       },
       (err: HttpErrorResponse) => {
         this.spinner.hide();

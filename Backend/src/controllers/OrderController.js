@@ -29,8 +29,8 @@ export const getOrderDetail = async (req, res) => {
 export const editDetailOrder = async (req, res) => {
     try {
         const { id } = req.params
-        const { status, description } = req.body
-        const response = await editOrder(id, { status, description })
+        const { status, description, statusNotes } = req.body
+        const response = await editOrder(id, { status, description, statusNotes })
         if (!response.success) return res.status(response.statusCode).json(response)
 
         return res.status(response.statusCode).json(response)

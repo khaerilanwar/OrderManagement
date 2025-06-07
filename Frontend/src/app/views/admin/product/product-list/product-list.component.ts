@@ -3,13 +3,13 @@ import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
-import { OrderService } from '../../../../services/public/order.service';
 import { DrawerModule } from 'primeng/drawer';
 import { TextareaModule } from 'primeng/textarea';
 import { SelectModule } from 'primeng/select';
 import { InputTextModule } from 'primeng/inputtext';
 import { FileUploadModule } from 'primeng/fileupload';
 import { CommonModule } from '@angular/common';
+import { OrderService } from '../../../../services/admin/order.service';
 
 interface UploadEvent {
   originalEvent: Event;
@@ -35,6 +35,7 @@ export class ProductListComponent implements OnInit {
 
   ngOnInit(): void {
     this.getAllProducts();
+    this.getAllProductCategories();
   }
 
   onToggleDrawer() {
@@ -51,6 +52,14 @@ export class ProductListComponent implements OnInit {
     this.orderService.getAllProducts().subscribe(
       (res: any) => {
         this.products = res.data;
+      }
+    )
+  }
+
+  getAllProductCategories() {
+    this.orderService.getAllProductCategories().subscribe(
+      (res: any) => {
+        this.categories = res.data;
       }
     )
   }

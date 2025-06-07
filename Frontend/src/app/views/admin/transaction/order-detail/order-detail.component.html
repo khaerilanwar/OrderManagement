@@ -66,8 +66,8 @@
                             <td class="min-w-4">:</td>
                             <td>
                                 <p-badge
-                                    [value]="order?.down_payment >= order?.invoice ? 'Sudah Lunas' : order?.down_payment === 0 ? 'Belum Dibayar' : 'Belum Lunas'"
-                                    [severity]="order?.down_payment >= order?.invoice ? 'success' : order?.down_payment === 0 ? 'danger' : 'warn'" />
+                                    [value]="order?.down_payment >= order?.invoice && order?.invoice !== 0 ? 'Sudah Lunas' : order?.down_payment >= order?.invoice ? 'Menunggu Invoice' : order?.down_payment === 0 ? 'Belum Dibayar' : 'Belum Lunas'"
+                                    [severity]="order?.down_payment >= order?.invoice  && order?.invoice !== 0 ? 'success' : order?.down_payment >= order?.invoice ? 'info' :  order?.down_payment === 0 ? 'danger' : 'warn'" />
                             </td>
                         </tr>
                         <tr>

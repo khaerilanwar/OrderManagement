@@ -30,45 +30,50 @@ export class AppMenu {
                     },
                     {
                         label: 'Order',
-                        icon: 'pi pi-fw pi-id-card',
+                        icon: 'pi pi-fw pi-shop',
                         items: [
                             {
-                                label: 'Order List',
-                                icon: 'pi pi-fw pi-id-card',
+                                label: 'List',
+                                icon: 'pi pi-fw pi-caret-right',
                                 routerLink: ['/admin/order/list']
                             },
                             {
-                                label: 'Order Category',
-                                icon: 'pi pi-fw pi-id-card',
+                                label: 'Category',
+                                icon: 'pi pi-fw pi-caret-right',
                                 routerLink: ['/admin/order/category']
                             }
                         ]
                     },
                     {
                         label: 'Product',
-                        icon: 'pi pi-fw pi-id-card',
+                        icon: 'pi pi-fw pi-gift',
                         items: [
                             {
-                                label: 'Product List',
-                                icon: 'pi pi-fw pi-id-card',
+                                label: 'List',
+                                icon: 'pi pi-fw pi-caret-right',
                                 routerLink: ['/admin/product/list']
                             },
                             {
-                                label: 'Product Category',
-                                icon: 'pi pi-fw pi-id-card',
+                                label: 'Category',
+                                icon: 'pi pi-fw pi-caret-right',
                                 routerLink: ['/admin/product/category']
                             }
                         ]
                     },
                     {
                         label: 'Customer',
-                        icon: 'pi pi-fw pi-id-card',
+                        icon: 'pi pi-fw pi-users',
                         routerLink: ['/admin/customer']
                     },
                     {
                         label: 'Lisensi',
-                        icon: 'pi pi-fw pi-id-card',
+                        icon: 'pi pi-fw pi-qrcode',
                         routerLink: ['/admin/customer/license']
+                    },
+                    {
+                        label: 'Chatting',
+                        icon: 'pi pi-fw pi-comments',
+                        routerLink: ['/admin/customer/chatting']
                     }
                 ]
             }

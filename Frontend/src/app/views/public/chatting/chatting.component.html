@@ -1,0 +1,40 @@
+<div class="card">
+    <div class="max-w-screen-md mx-auto shadow-xl">
+        <div class="col-span-8 flex flex-col overflow-hidden bg-gray-50 rounded-2xl">
+            <div class="bg-primary-500">
+                <div class="flex items-center gap-2 p-1.5 px-4">
+                    <img class="block max-w-12 xl:block rounded-border" src="/assets/images/ikon-user.png"
+                        alt="user chat" />
+                    <h3 class="text-xl font-semibold text-white my-auto"> Admin SIPRODIG </h3>
+                </div>
+            </div>
+            <p-scrollpanel #chatPanel [style]="{ width: '100%', height: '460px' }">
+                @for (msg of messages; track $index) {
+                @if (msg.sender === 'admin') {
+                <div class="max-w-md bg-green-200 rounded-xl mt-5 mx-8 p-3">
+                    <p class="mb-2 font-medium">
+                        {{ msg.message }}
+                    </p>
+                    <p class="text-sm"> {{ msg.timestamp | date: 'yyyy-MM-dd HH:mm' }} </p>
+                </div>
+                }
+                @else if (msg.sender === 'customer') {
+                <div class="mx-8 p-4 bg-blue-200 max-w-md rounded-xl mt-5 ml-auto">
+                    <p class="mb-2 font-medium">
+                        {{ msg.message }}
+                    </p>
+                    <p class="text-sm"> {{ msg.timestamp | date: 'yyyy-MM-dd HH:mm' }} </p>
+                </div>
+                }
+                }
+            </p-scrollpanel>
+            <div class="relative w-full p-8 z-50">
+                <div class="absolute bottom-0 left-0 right-0 px-8 pb-2 flex gap-2 items-end">
+                    <textarea pTextarea id="address" rows="1" class="w-full" [(ngModel)]="inputChat"
+                        [autoResize]="true"></textarea>
+                    <p-button icon="pi pi-send" (onClick)="sendMessage(customerId)" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

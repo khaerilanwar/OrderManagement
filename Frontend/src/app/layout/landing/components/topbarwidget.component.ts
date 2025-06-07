@@ -6,10 +6,12 @@ import { ButtonModule } from 'primeng/button';
 import { AuthService } from '../../../services/admin/auth.service';
 import { UtilsService } from '../../../services/helper/utils.service';
 import { NgIf } from '@angular/common';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService } from 'primeng/api';
 
 @Component({
     selector: 'topbar-widget',
-    imports: [NgIf, RouterModule, StyleClassModule, ButtonModule, RippleModule],
+    imports: [NgIf, RouterModule, StyleClassModule, ButtonModule, RippleModule, ConfirmDialogModule],
     template: `
         <a class="flex items-center" href="#">
             <svg viewBox="0 0 54 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-12 mr-2">
@@ -62,7 +64,7 @@ import { NgIf } from '@angular/common';
             @if (hasLoggedIn) {
                 <div class="flex border-t items-center lg:border-t-0 border-surface py-4 lg:py-0 mt-4 lg:mt-0 gap-2">
                     <div class="font-medium text-lg">{{ customer }}</div>
-                    <button pButton pRipple icon="pi pi-sign-out" class="rounded-xl" (click)="onLogout()" [text]="true"></button>
+                    <button pButton pRipple icon="pi pi-sign-out" class="rounded-xl" (click)="onLogout($event)" [text]="true"></button>
                 </div>
             } @else {
                 <div class="flex border-t lg:border-t-0 border-surface py-4 lg:py-0 mt-4 lg:mt-0 gap-2">
@@ -71,7 +73,10 @@ import { NgIf } from '@angular/common';
                 </div>
             }
         </div>
-    `
+
+        <p-confirm-dialog />
+    `,
+    providers: [ConfirmationService]
 })
 export class TopbarWidget {
     hasLoggedIn: boolean = false;
@@ -79,7 +84,8 @@ export class TopbarWidget {
     constructor(
         public router: Router,
         public authService: AuthService,
-        public utils: UtilsService
+        public utils: UtilsService,
+        public confirmationService: ConfirmationService
     ) {
         this.hasLoggedIn = authService.isAuthCustomer();
 
@@ -90,9 +96,29 @@ export class TopbarWidget {
         }
     }
 
-    onLogout() {
-        localStorage.removeItem('token');
-        this.hasLoggedIn = false;
-        this.router.navigate(['/']);
+    onLogout(event: Event) {
+        this.confirmationService.confirm({
+            target: event.target as EventTarget,
+            closeOnEscape: true,
+            dismissableMask: true,
+            header: 'Logout',
+            message: `Do you want to logout from SIPRODIG ?`,
+            icon: 'pi pi-info-circle',
+            rejectButtonProps: {
+                label: 'Cancel',
+                severity: 'secondary'
+            },
+            acceptButtonProps: {
+                label: 'OK',
+                severity: 'primary'
+            },
+
+            accept: () => {
+                localStorage.removeItem('token');
+                this.hasLoggedIn = false;
+                this.router.navigate(['/']);
+            }
+        });
+
     }
 }

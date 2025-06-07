@@ -47,6 +47,10 @@ export class OrderService {
         return this.http.post('/product/category', data);
     }
 
+    updateProductCategory(id: string, data: any) {
+        return this.http.put(`/product/category/${id}`, data);
+    }
+
     deleteProductCategory(id: string) {
         return this.http.delete(`/product/category/${id}`);
     }

@@ -39,7 +39,8 @@ export const getTestimoni = async () => {
         const data = await prisma.testimoni.findMany({
             include: {
                 customer: true
-            }
+            },
+            orderBy: [{ created_at: "desc" }],
         })
 
         return { success: true, statusCode: 200, message: "Berhasil mendapatkan testimoni!", data }

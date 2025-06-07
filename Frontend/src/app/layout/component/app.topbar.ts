@@ -1,16 +1,17 @@
 import { Component } from '@angular/core';
-import { MenuItem } from 'primeng/api';
+import { Confirmation, ConfirmationService, MenuItem } from 'primeng/api';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { StyleClassModule } from 'primeng/styleclass';
 import { LayoutService } from '../service/layout.service';
 import { AuthService } from '../../services/admin/auth.service';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @Component({
     selector: 'app-topbar',
     standalone: true,
-    imports: [RouterModule, CommonModule, StyleClassModule],
+    imports: [RouterModule, CommonModule, StyleClassModule, ConfirmDialogModule],
     template: ` <div class="layout-topbar">
         <div class="layout-topbar-logo-container">
             <button class="layout-menu-button layout-topbar-action" (click)="layoutService.onMenuToggle()">
@@ -43,13 +44,17 @@ import { NgxSpinnerService } from 'ngx-spinner';
                 <button type="button" class="layout-topbar-action" (click)="toggleDarkMode()">
                     <i [ngClass]="{ 'pi ': true, 'pi-moon': layoutService.isDarkTheme(), 'pi-sun': !layoutService.isDarkTheme() }"></i>
                 </button>
-                <button type="button" class="layout-topbar-action" (click)="logOut()">
+                <button type="button" class="layout-topbar-action" (click)="logOut($event)">
                     <i class="pi pi-sign-out"></i>
                     <span>Profile</span>
                 </button>
             </div>
         </div>
-    </div>`
+    </div>
+
+    <p-confirm-dialog />
+    `,
+    providers: [ConfirmationService]
 })
 export class AppTopbar {
     items!: MenuItem[];
@@ -58,19 +63,42 @@ export class AppTopbar {
         public layoutService: LayoutService,
         private authService: AuthService,
         private spinner: NgxSpinnerService,
-        private router: Router
+        private router: Router,
+        private confirmationService: ConfirmationService
     ) { }
 
     toggleDarkMode() {
         this.layoutService.layoutConfig.update((state) => ({ ...state, darkTheme: !state.darkTheme }));
     }
 
-    logOut() {
-        this.spinner.show();
-        this.authService.logOut().subscribe((resp: any) => {
-            this.spinner.hide();
-            localStorage.removeItem('token');
-            this.router.navigate(['/login']);
+    logOut(event: Event) {
+        this.confirmationService.confirm({
+            target: event.target as EventTarget,
+            closeOnEscape: true,
+            dismissableMask: true,
+            header: 'Logout',
+            message: `Do you want to logout from system ?`,
+            icon: 'pi pi-info-circle',
+            rejectButtonProps: {
+                label: 'Cancel',
+                severity: 'secondary'
+            },
+            acceptButtonProps: {
+                label: 'OK',
+                severity: 'primary'
+            },
+
+            accept: () => {
+                this.spinner.show();
+                this.authService.logOut().subscribe(
+                    (resp: any) => {
+                        this.spinner.hide();
+                        localStorage.removeItem('token');
+                        this.router.navigate(['/login']);
+                    }
+                );
+            }
         });
+
     }
 }

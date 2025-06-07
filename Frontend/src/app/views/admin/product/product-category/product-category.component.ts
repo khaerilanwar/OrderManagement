@@ -26,8 +26,9 @@ export class ProductCategoryComponent implements OnInit {
   displayModal: boolean = false;
   headerModal: string = 'New Product Category';
 
-  newCategoryName: string = '';
-  newCategoryDescription: string = '';
+  categoryName: string = '';
+  categoryDescription: string = '';
+  categoryIdSelected: string = '';
 
   constructor(
     private orderService: OrderService,
@@ -40,8 +41,19 @@ export class ProductCategoryComponent implements OnInit {
     this.getAllProductCategories();
   }
 
-  onOpenNewModal() {
+  onOpenNewModal(type: string, arg: string = '') {
     this.displayModal = !this.displayModal;
+    if (type === 'edit') {
+      this.headerModal = 'Edit Product Category';
+      this.categoryIdSelected = arg;
+      const selectedCategory = this.productCategories.find(category => category.id === arg);
+      this.categoryName = selectedCategory?.name || '';
+      this.categoryDescription = selectedCategory?.description || '';
+    } else if (type === 'new') {
+      this.headerModal = 'New Product Category'
+      this.categoryName = '';
+      this.categoryDescription = '';
+    }
   }
 
   onToggleModal() {
@@ -52,33 +64,95 @@ export class ProductCategoryComponent implements OnInit {
     table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
   }
 
+  onConfirmDelete(event: Event, item: any) {
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      closeOnEscape: true,
+      dismissableMask: true,
+      header: 'Delete Confirmation',
+      message: `Do you want to delete <span class="font-semibold">${item.name}</span> category ?`,
+      icon: 'pi pi-info-circle',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'secondary'
+      },
+      acceptButtonProps: {
+        label: 'Delete',
+        severity: 'danger'
+      },
+
+      accept: () => {
+        this.deleteProductCategory(item.id);
+      }
+    });
+  }
+
   onSaveProductCategory() {
     this.spinner.show();
-    this.orderService.createProductCategory(
-      {
-        name: this.newCategoryName,
-        description: this.newCategoryDescription
-      }
-    ).subscribe(
-      (res: any) => {
-        this.spinner.hide();
-        this.getAllProductCategories();
-        this.onToggleModal();
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: res.message || 'Product category created successfully.'
-        })
-      },
-      (err: HttpErrorResponse) => {
-        this.spinner.hide();
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: err.error.message || 'An error occurred while creating the product category.'
-        })
-      }
-    )
+    if (!this.categoryName || !this.categoryDescription) {
+      this.spinner.hide();
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Please fill in all fields.'
+      });
+      return;
+    }
+
+    if (this.headerModal === 'New Product Category') {
+      this.orderService.createProductCategory(
+        {
+          name: this.categoryName,
+          description: this.categoryDescription
+        }
+      ).subscribe(
+        (res: any) => {
+          this.spinner.hide();
+          this.getAllProductCategories();
+          this.onToggleModal();
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: res.message || 'Product category created successfully.'
+          })
+        },
+        (err: HttpErrorResponse) => {
+          this.spinner.hide();
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: err.error.message || 'An error occurred while creating the product category.'
+          })
+        }
+      )
+    } else if (this.headerModal === 'Edit Product Category') {
+      this.orderService.updateProductCategory(
+        this.categoryIdSelected,
+        {
+          name: this.categoryName,
+          description: this.categoryDescription
+        }
+      ).subscribe(
+        (res: any) => {
+          this.spinner.hide();
+          this.getAllProductCategories();
+          this.onToggleModal();
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: res.message || 'Product category updated successfully.'
+          })
+        },
+        (err: HttpErrorResponse) => {
+          this.spinner.hide();
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: err.error.message || 'An error occurred while updating the product category.'
+          })
+        }
+      )
+    }
   }
 
   getAllProductCategories() {

@@ -1,4 +1,4 @@
-import { createCategoryProduct, getProductCategories, getProducts, removeProductCategory } from "../services/ProductService.js"
+import { createCategoryProduct, editProductCategory, getProductCategories, getProducts, removeProductCategory } from "../services/ProductService.js"
 
 export const getAllProduct = async (req, res) => {
     try {
@@ -58,7 +58,7 @@ export const updateProductCategory = async (req, res) => {
         const { id } = req.params
         const { name, description } = req.body
 
-        const response = await createCategoryProduct({ id: Number(id), name, description })
+        const response = await editProductCategory(Number(id), { name, description })
         if (!response.success) return res.status(response.statusCode).json(response)
 
         return res.status(response.statusCode).json(response)
