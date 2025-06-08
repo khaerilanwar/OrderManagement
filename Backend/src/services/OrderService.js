@@ -240,3 +240,36 @@ export const payConfirmOrder = async (orderId) => {
         return { success: false, statusCode: 500, message: err.message || "Internal server error." }
     }
 }
+
+export const reportLast30Days = async () => {
+    try {
+        const data = await prisma.order.findMany({
+            where: {
+                status_id: 5,
+                completed_at: {
+                    gte: moment().subtract(30, 'days').toDate(),
+                    lte: new Date()
+                }
+            },
+            include: {
+                category: true
+            }
+        })
+
+        if (!data || data.length === 0) return { success: false, statusCode: 404, message: "No completed orders found in the last 30 days." }
+
+        return { success: true, statusCode: 200, message: "Completed orders in the last 30 days retrieved successfully.", data }
+    }
+    catch (err) {
+        return { success: false, statusCode: 500, message: err.message || "Internal server error." }
+    }
+}
+
+export const reportRangeFilter = async (startDate, endDate) => {
+    try {
+
+    }
+    catch (err) {
+        return { success: false, statusCode: 500, message: err.message || "Internal server error." }
+    }
+}

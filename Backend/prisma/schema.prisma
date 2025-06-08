@@ -54,6 +54,7 @@ model Order {
   description    String?
   down_payment   Int?             @default(0)
   invoice        Int
+  completed_at   DateTime?
   customer_id    String
   status_id      Int
   category_id    String

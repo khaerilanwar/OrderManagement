@@ -41,6 +41,11 @@ export class AppMenu {
                                 label: 'Category',
                                 icon: 'pi pi-fw pi-caret-right',
                                 routerLink: ['/admin/order/category']
+                            },
+                            {
+                                label: 'Report',
+                                icon: 'pi pi-fw pi-caret-right',
+                                routerLink: ['/admin/order/report']
                             }
                         ]
                     },

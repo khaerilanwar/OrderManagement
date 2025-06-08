@@ -27,6 +27,15 @@ async function orderSeeder(length = 30) {
             updated_at: new Date(),
         }));
 
+        // Nambahin completed date
+        orders.forEach(order => {
+            if (order.status_id === 5) {
+                order.completed_at = fakerID_ID.date.between({ from: new Date('2025-04-01'), to: new Date() });
+            } else {
+                order.completed_at = null;
+            }
+        });
+
         await prisma.order.createMany({ data: orders });
         printLog(`Created ${length} new orders.`);
     }
