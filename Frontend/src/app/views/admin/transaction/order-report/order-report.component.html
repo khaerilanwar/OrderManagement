@@ -2,7 +2,7 @@
     <div class="grid grid-cols-12">
         <div class="col-span-6">
             <p class="text-lg font-medium mb-2">Filter</p>
-            <p-button (onClick)="last30days()" label="Last 30 days" variant="outlined" severity="secondary" />
+            <p-button (onClick)="downloadReport()" label="Last 30 days" variant="outlined" severity="secondary" />
         </div>
         <div class="col-span-6">
             <p class="text-lg font-medium mb-2">Choosed Date</p>
@@ -10,7 +10,7 @@
                 <p-datepicker placeholder="dd-mm-yyyy" dateFormat="dd-mm-yy" [(ngModel)]="startDate" />
                 <div class="text-xl mx-3">to</div>
                 <p-datepicker placeholder="dd-mm-yyyy" dateFormat="dd-mm-yy" [(ngModel)]="endDate" />
-                <p-button label="Download" (onClick)="generateReport()" severity="contrast" />
+                <p-button label="Download" (onClick)="downloadReport()" severity="contrast" />
             </div>
         </div>
     </div>

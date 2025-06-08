@@ -1,4 +1,4 @@
-import { createCustomerOrder, customerListOrders, editInvoice, editOrder, listOrders, orderDetail, payConfirmOrder, removeOrder } from "../services/OrderService.js"
+import { createCustomerOrder, customerListOrders, editInvoice, editOrder, listOrders, orderDetail, payConfirmOrder, removeOrder, reportOrder } from "../services/OrderService.js"
 
 // admin
 export const getListOrders = async (req, res) => {
@@ -103,6 +103,28 @@ export const payConfirmation = async (req, res) => {
         if (!response.success) return res.status(response.statusCode).json(response)
 
         return res.status(response.statusCode).json(response)
+    }
+    catch (err) {
+        return res.status(500).json({ message: err.message || "Internal server error." })
+    }
+}
+
+export const downloadReport = async (req, res) => {
+    try {
+        const { startDate, endDate } = req.query
+        const response = await reportOrder(startDate, endDate)
+        if (!response.success) return res.status(response.statusCode).json(response)
+
+        res.setHeader(
+            'Content-Type',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        res.setHeader(
+            'Content-Disposition',
+            'attachment; filename="report-30-last-days.xlsx"'
+        )
+
+        return res.send(response.data)
     }
     catch (err) {
         return res.status(500).json({ message: err.message || "Internal server error." })

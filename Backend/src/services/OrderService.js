@@ -1,6 +1,7 @@
 import { prisma } from '../config/Database.js'
 import { OrderDTO } from '../DTOs/OrderDTO.js'
 import moment from 'moment'
+import ExcelJs from 'exceljs'
 
 export const listOrders = async () => {
     try {
@@ -65,7 +66,8 @@ export const editOrder = async (id, data) => {
                 where: { id },
                 data: {
                     status_id: data.status,
-                    description: data.description
+                    description: data.description,
+                    completed_at: data.status === 5 ? new Date() : null
                 }
             })
 
@@ -241,33 +243,83 @@ export const payConfirmOrder = async (orderId) => {
     }
 }
 
-export const reportLast30Days = async () => {
+export const reportOrder = async (startDate = null, endDate = null) => {
     try {
-        const data = await prisma.order.findMany({
+        const data = (await prisma.order.findMany({
             where: {
                 status_id: 5,
                 completed_at: {
-                    gte: moment().subtract(30, 'days').toDate(),
-                    lte: new Date()
+                    gte: startDate && endDate ? new Date(startDate) : moment().subtract(30, 'days').toDate(),
+                    lte: endDate && endDate ? new Date(endDate) : new Date()
                 }
             },
             include: {
-                category: true
-            }
-        })
+                customer: true,
+                category: {
+                    include: {
+                        product_category: true
+                    }
+                }
+            },
+            orderBy: [{ id: 'asc' }]
+        })).map(
+            (item) => ({
+                id: item.id,
+                name: item.title,
+                category: item.category.name,
+                customer: item.customer.name,
+                product: item.category.product_category.name,
+                invoice: item.invoice,
+                completedAt: moment(item.completed_at).format('YYYY-MM-DD')
+            })
+        )
 
         if (!data || data.length === 0) return { success: false, statusCode: 404, message: "No completed orders found in the last 30 days." }
 
-        return { success: true, statusCode: 200, message: "Completed orders in the last 30 days retrieved successfully.", data }
-    }
-    catch (err) {
-        return { success: false, statusCode: 500, message: err.message || "Internal server error." }
-    }
-}
+        // Generate report data
+        const workbook = new ExcelJs.Workbook();
+        const worksheet = workbook.addWorksheet('Order Report');
 
-export const reportRangeFilter = async (startDate, endDate) => {
-    try {
+        // 1. Buat kolom header
+        worksheet.columns = [
+            { header: 'Order ID', key: 'id', width: 15 },
+            { header: 'Order Name', key: 'name', width: 30 },
+            { header: 'Order Category', key: 'category', width: 20 },
+            { header: 'Product', key: 'product', width: 20 },
+            { header: 'Customer', key: 'customer', width: 20 },
+            { header: 'Invoice', key: 'invoice', width: 15 },
+            { header: 'Completed At', key: 'completedAt', width: 20 },
+        ]
 
+        // 2. Format data
+        const formatRupiah = (angka) => {
+            return 'Rp. ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        };
+
+        data.forEach(item => {
+            item.invoice = formatRupiah(item.invoice);
+        });
+
+        worksheet.getRow(1).eachCell((cell) => {
+            cell.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'FF0070C0' } // Biru (hex RGB => #0070C0)
+            };
+            cell.font = {
+                bold: true,
+                color: { argb: 'FFFFFFFF' }, // Putih
+                size: 12
+            };
+            cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        });
+
+        // 3. Tambahkan data ke worksheet
+        data.forEach(item => worksheet.addRow(item));
+
+        const buffer = await workbook.xlsx.writeBuffer();
+
+        return { success: true, statusCode: 200, message: "Report generated successfully!", data: buffer };
     }
     catch (err) {
         return { success: false, statusCode: 500, message: err.message || "Internal server error." }

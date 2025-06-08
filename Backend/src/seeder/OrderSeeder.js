@@ -21,7 +21,8 @@ async function orderSeeder(length = 30) {
             down_payment: fakerID_ID.number.int({ min: 50000, max: 200000 }),
             invoice: fakerID_ID.number.int({ min: 150000, max: 500000 }),
             customer_id: fakerID_ID.helpers.arrayElement(customers_id).id,
-            status_id: fakerID_ID.helpers.arrayElement(status_id).id,
+            // status_id: fakerID_ID.helpers.arrayElement(status_id).id,
+            status_id: 5,
             category_id: fakerID_ID.helpers.arrayElement(categories_id).id,
             created_at: new Date(),
             updated_at: new Date(),
@@ -30,7 +31,7 @@ async function orderSeeder(length = 30) {
         // Nambahin completed date
         orders.forEach(order => {
             if (order.status_id === 5) {
-                order.completed_at = fakerID_ID.date.between({ from: new Date('2025-04-01'), to: new Date() });
+                order.completed_at = fakerID_ID.date.between({ from: new Date('2025-05-01'), to: new Date() });
             } else {
                 order.completed_at = null;
             }

@@ -2,29 +2,64 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
+import { OrderService } from '../../../../services/admin/order.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { MessageService } from 'primeng/api';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-order-report',
   imports: [ButtonModule, DatePickerModule, FormsModule],
   templateUrl: './order-report.component.html',
-  styleUrl: './order-report.component.scss'
+  styleUrl: './order-report.component.scss',
+  providers: [DatePipe],
 })
 export class OrderReportComponent {
-  startDate: Date | null = null;
-  endDate: Date | null = null;
+  startDate!: any
+  endDate!: any
 
-  constructor() { }
+  constructor(
+    private orderService: OrderService,
+    private spinner: NgxSpinnerService,
+    private messageService: MessageService,
+    private datePipe: DatePipe
+  ) { }
 
-  generateReport(): void {
-    if (this.startDate && this.endDate) {
-      // Logic to generate report based on the selected date range
-      console.log(`Generating report from ${this.startDate} to ${this.endDate}`);
-    } else {
-      console.error('Please select both start and end dates.');
-    }
-  }
+  downloadReport() {
+    this.spinner.show();
+    const startReport = this.startDate ? this.datePipe.transform(this.startDate, 'yyyy-MM-dd') : '';
+    const endReport = this.endDate ? this.datePipe.transform(this.endDate, 'yyyy-MM-dd') : '';
+    this.orderService.downloadOrderReport(startReport, endReport).subscribe(
+      (res: Blob) => {
 
-  last30days() {
+        const blob = new Blob(
+          [res],
+          { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }
+        )
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('target', '_blank');
+        link.setAttribute('href', downloadUrl);
+        link.setAttribute(
+          'download',
+          `report-${this.datePipe.transform(new Date(), 'yyyy-MM-dd HHMM')}.xlsx`
+        );
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
 
+        this.spinner.hide();
+      },
+      (err: HttpErrorResponse) => {
+        this.spinner.hide();
+
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to download report. Please try again later.'
+        })
+      }
+    )
   }
 }

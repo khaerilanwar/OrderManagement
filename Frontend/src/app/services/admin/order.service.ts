@@ -62,6 +62,10 @@ export class OrderService {
         return this.http.patch(`/product/${id}`, { isActive: status });
     }
 
+    downloadOrderReport(startDate: any, endDate: any) {
+        return this.http.get('/order/report/last30days', { responseType: 'blob', params: { startDate, endDate } });
+    }
+
     getAllProductCategories() {
         return this.http.get('/product/category');
     }
