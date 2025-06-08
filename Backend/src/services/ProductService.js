@@ -1,4 +1,6 @@
+import { fileURLToPath } from "url"
 import { prisma } from "../config/Database.js"
+import path from "path"
 
 export const getProducts = async () => {
     try {
@@ -6,7 +8,7 @@ export const getProducts = async () => {
             include: {
                 category: true
             },
-            orderBy: [{ created_at: "desc" }]
+            orderBy: [{ created_at: "desc" }, { name: "asc" }],
         })
 
         return { success: true, statusCode: 200, message: "Products retrieved successfully.", data }
@@ -46,11 +48,46 @@ export const editProduct = async (id, data) => {
             data: {
                 name: data.name,
                 description: data.description,
-                image: data.image
+                image: data.image === null ? product.image : data.image,
             }
         })
 
+        // hapus file lama jika ada
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = path.dirname(__filename);
+        const oldFilePath = path.join(__dirname, '../public/images', product.image);
+        if (data.image && product.image && oldFilePath !== path.join(__dirname, '../public/images', data.image)) {
+            try {
+                const fs = await import('fs');
+                if (fs.existsSync(oldFilePath)) {
+                    fs.unlinkSync(oldFilePath);
+                }
+            } catch (err) {
+                console.error("Error deleting old image file:", err);
+            }
+        }
+
         return { success: true, statusCode: 200, message: "Product updated successfully." }
+    }
+    catch (error) {
+        return { success: false, statusCode: 500, message: error.message || "Internal server error." }
+    }
+}
+
+export const changeProductStatus = async (id, isActive) => {
+    try {
+        const product = await prisma.product.findUnique({ where: { id } })
+
+        if (!product) return { success: false, statusCode: 404, message: "Product not found." }
+
+        await prisma.product.update({
+            where: { id },
+            data: {
+                is_active: isActive
+            }
+        })
+
+        return { success: true, statusCode: 200, message: `Product ${isActive ? 'activated' : 'deactivated'} successfully.` }
     }
     catch (error) {
         return { success: false, statusCode: 500, message: error.message || "Internal server error." }

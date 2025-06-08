@@ -3,6 +3,7 @@ import { RippleModule } from 'primeng/ripple';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
     standalone: true,
@@ -25,7 +26,7 @@ import { CommonModule } from '@angular/common';
                     <td style="width: 35%; min-width: 7rem;">{{ order.title }}</td>
                     <td style="width: 35%; min-width: 8rem;">{{ order.category.name }}</td>
                     <td style="width: 15%;">
-                        <button pButton pRipple type="button" icon="pi pi-search" class="p-button p-component p-button-text p-button-icon-only"></button>
+                        <button (click)="viewDetail(order.id)" pButton pRipple type="button" icon="pi pi-search" class="p-button p-component p-button-text p-button-icon-only"></button>
                     </td>
                 </tr>
             </ng-template>
@@ -35,11 +36,17 @@ import { CommonModule } from '@angular/common';
 export class RecentSalesWidget implements OnChanges {
     @Input() orders: any;
 
-    constructor() { }
+    constructor(
+        private router: Router
+    ) { }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['recentData']) {
             this.orders = changes['recentData'].currentValue;
         }
+    }
+
+    viewDetail(orderId: string) {
+        this.router.navigate(['/admin/order/detail/', orderId]);
     }
 }

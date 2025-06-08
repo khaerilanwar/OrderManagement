@@ -3,7 +3,8 @@
         <ng-template #caption>
             <div class="flex items-center justify-between">
                 <span class="text-xl font-bold">Products</span>
-                <p-button (onClick)="onToggleDrawer()" icon="pi pi-plus" label="New Product" severity="info"></p-button>
+                <p-button (onClick)="onToggleDrawer('new')" icon="pi pi-plus" label="New Product"
+                    severity="info"></p-button>
             </div>
         </ng-template>
         <ng-template #header>
@@ -19,17 +20,21 @@
         <ng-template #body let-product>
             <tr>
                 <td>
-                    <img [src]="product.image" [alt]="product.name" class="w-24 rounded" />
+                    <img [src]="`${resourceUrl}${product.image}`" [alt]="product.name" class="w-24 rounded" />
                 </td>
                 <td>{{ product.name }}</td>
                 <td>{{ limitString(product.description, 60) }}</td>
                 <td>{{ product.category.name }}</td>
                 <td>
-                    <p-tag [value]="product.is_active ? 'Active' : 'InActive'" severity="success" />
+                    <p-tag [value]="product.is_active ? 'Active' : 'InActive'"
+                        [severity]="product.is_active ? 'success' : 'danger'" />
                 </td>
                 <td>
-                    <p-button icon="pi pi-info" class="me-2" severity="info"></p-button>
-                    <p-button icon="pi pi-pencil" severity="warn"></p-button>
+                    <p-button [icon]="product.is_active ? 'pi pi-check-circle' : 'pi pi-times-circle'" class="me-2"
+                        [loading]="isLoadingChangeStatus" (onClick)="onChangeStatus(product.id, product.is_active)"
+                        [severity]="product.is_active ? 'success' : 'danger'"></p-button>
+                    <p-button icon="pi pi-pencil" (onClick)="onToggleDrawer('edit', product)"
+                        severity="warn"></p-button>
                 </td>
             </tr>
         </ng-template>
@@ -37,38 +42,38 @@
 </div>
 
 
-<p-drawer header="Create New Product" [(visible)]="displayDrawer" position="left"
-    styleClass="!w-full md:!w-80 lg:!w-[30rem]">
+<p-drawer [header]="drawerHeader" [(visible)]="displayDrawer" position="left"
+    styleClass="!w-full md:!w-80 lg:!w-[33rem]">
     <div class="flex justify-end gap-2 mb-6">
-        <p-button label="Close" styleClass="w-full" class="block w-full" severity="secondary" />
-        <p-button label="Create" styleClass="w-full" class="block w-full" />
+        <p-button label="Close" styleClass="w-full" class="block w-full" (onClick)="displayDrawer = false"
+            severity="secondary" />
+        <p-button label="Create" styleClass="w-full" class="block w-full"
+            (onClick)="saveNewProduct(drawerHeader === 'Create New Product' ? 'new' : 'edit', fileUploader)" />
     </div>
 
     <div class="flex flex-col gap-2 mb-4">
         <label for="name" class="font-medium">Name</label>
-        <input pInputText id="name" class="flex-auto" />
+        <input pInputText id="name" class="flex-auto" [(ngModel)]="inputName" />
     </div>
 
+    @if (drawerHeader === 'Create New Product') {
     <div class="flex flex-col gap-2 mb-4">
         <label for="cust" class="font-medium">Category</label>
-        <p-select [options]="categories" inputId="cust" optionLabel="name" placeholder="Select category" class="w-full">
+        <p-select [options]="categories" inputId="cust" [(ngModel)]="categorySelected" optionLabel="name"
+            placeholder="Select category" class="w-full">
         </p-select>
     </div>
+    }
 
     <div class="flex flex-col gap-2 mb-8">
         <label for="description" class="font-semibold w-24">Description</label>
-        <textarea pTextarea rows="4" id="description"></textarea>
+        <textarea pTextarea rows="4" id="description" [(ngModel)]="inputDescription"></textarea>
     </div>
 
-    <p-fileupload name="demo[]" url="https://www.primefaces.org/cdn/api/upload.php" accept="image/*"
-        maxFileSize="1000000" mode="advanced" [showUploadButton]="false">
+    <p-fileupload #fileUploader accept="image/*" [customUpload]="true" maxFileSize="1000000" mode="advanced"
+        [showUploadButton]="false">
         <ng-template #empty>
             <div>Drag and drop files to here to upload.</div>
-        </ng-template>
-        <ng-template #content>
-            <ul *ngIf="uploadedFiles.length">
-                <li *ngFor="let file of uploadedFiles">{{ file.name }} - {{ file.size }} bytes</li>
-            </ul>
         </ng-template>
     </p-fileupload>
 

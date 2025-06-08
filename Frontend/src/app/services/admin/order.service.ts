@@ -35,6 +35,33 @@ export class OrderService {
         return this.http.get('/product');
     }
 
+    createNewProduct(data: any, file: File | null = null) {
+        const formData = new FormData();
+
+        formData.append('name', data.name);
+        formData.append('description', data.description);
+        formData.append('categoryId', data.categoryId);
+        formData.append('image', file as Blob);
+
+        return this.http.post('/product', formData)
+    }
+
+    updateProduct(id: string, data: any, file: File | null = null) {
+        const formData = new FormData();
+
+        formData.append('name', data.name);
+        formData.append('description', data.description);
+        if (file !== null) {
+            formData.append('image', file as Blob);
+        }
+
+        return this.http.put(`/product/${id}`, formData);
+    }
+
+    updateProductStatus(id: string, status: boolean) {
+        return this.http.patch(`/product/${id}`, { isActive: status });
+    }
+
     getAllProductCategories() {
         return this.http.get('/product/category');
     }

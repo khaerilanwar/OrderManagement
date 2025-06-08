@@ -7,14 +7,11 @@ import { DrawerModule } from 'primeng/drawer';
 import { TextareaModule } from 'primeng/textarea';
 import { SelectModule } from 'primeng/select';
 import { InputTextModule } from 'primeng/inputtext';
-import { FileUploadModule } from 'primeng/fileupload';
+import { FileUpload, FileUploadModule } from 'primeng/fileupload';
 import { CommonModule } from '@angular/common';
 import { OrderService } from '../../../../services/admin/order.service';
-
-interface UploadEvent {
-  originalEvent: Event;
-  files: File[];
-}
+import { MessageService } from 'primeng/api';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-product-list',
@@ -23,14 +20,22 @@ interface UploadEvent {
   styleUrl: './product-list.component.scss'
 })
 export class ProductListComponent implements OnInit {
-
+  resourceUrl: string = 'http://localhost:3000/static/images/';
   products: any[] = []
   displayDrawer: boolean = false;
   categories: any[] = [];
-  uploadedFiles: any[] = [];
+  drawerHeader: string = ''
+  productSelected!: any
+  isLoadingChangeStatus: boolean = false;
+
+  // form input
+  inputName: string = '';
+  inputDescription: string = '';
+  categorySelected!: any
 
   constructor(
-    private orderService: OrderService
+    private orderService: OrderService,
+    private messageService: MessageService
   ) { }
 
   ngOnInit(): void {
@@ -38,13 +43,19 @@ export class ProductListComponent implements OnInit {
     this.getAllProductCategories();
   }
 
-  onToggleDrawer() {
+  onToggleDrawer(type: 'new' | 'edit', product?: any) {
     this.displayDrawer = !this.displayDrawer;
-  }
-
-  onUpload(event: UploadEvent) {
-    for (let file of event.files) {
-      this.uploadedFiles.push(file);
+    if (type === 'new') {
+      this.drawerHeader = 'Create New Product';
+      this.inputName = '';
+      this.inputDescription = '';
+      this.categorySelected = undefined;
+    } else if (type === 'edit' && product) {
+      this.drawerHeader = 'Edit Product';
+      this.inputName = product.name;
+      this.inputDescription = product.description;
+      this.categorySelected = this.categories.find(c => c.id === product.category.id);
+      this.productSelected = product;
     }
   }
 
@@ -60,6 +71,134 @@ export class ProductListComponent implements OnInit {
     this.orderService.getAllProductCategories().subscribe(
       (res: any) => {
         this.categories = res.data;
+      }
+    )
+  }
+
+  saveNewProduct(type: string, fileUploader: FileUpload) {
+    if (type === 'new') {
+      if (fileUploader.files.length === 0) {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Warning',
+          detail: 'Please select a file to upload.'
+        })
+        return
+      }
+
+      this.orderService.createNewProduct(
+        {
+          name: this.inputName,
+          description: this.inputDescription,
+          categoryId: this.categorySelected.id
+        },
+        fileUploader.files[0] as File
+      ).subscribe(
+        (res: any) => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Product created successfully.'
+          });
+          this.displayDrawer = false;
+          this.getAllProducts();
+          fileUploader.clear();
+          this.inputName = '';
+          this.inputDescription = '';
+          this.categorySelected = undefined;
+        },
+        (err: HttpErrorResponse) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: err.error.message || 'An error occurred while creating the product.'
+          });
+        }
+      )
+    }
+    else if (type === 'edit') {
+      if (fileUploader.files.length > 0) {
+        this.orderService.updateProduct(
+          this.productSelected.id,
+          {
+            name: this.inputName,
+            description: this.inputDescription
+          },
+          fileUploader.files[0] as File
+        ).subscribe(
+          (res: any) => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: 'Product updated successfully.'
+            });
+            this.displayDrawer = false;
+            this.getAllProducts();
+            fileUploader.clear();
+            this.inputName = '';
+            this.inputDescription = '';
+            this.categorySelected = undefined;
+          },
+          (err: HttpErrorResponse) => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: err.error.message || 'An error occurred while updating the product.'
+            });
+          }
+        )
+      } else {
+        this.orderService.updateProduct(
+          this.productSelected.id,
+          {
+            name: this.inputName,
+            description: this.inputDescription
+          }
+        ).subscribe(
+          (res: any) => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: 'Product updated successfully.'
+            });
+            this.displayDrawer = false;
+            this.getAllProducts();
+            fileUploader.clear();
+            this.inputName = '';
+            this.inputDescription = '';
+            this.categorySelected = undefined;
+          },
+          (err: HttpErrorResponse) => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: err.error.message || 'An error occurred while updating the product.'
+            });
+          }
+        )
+      }
+    }
+  }
+
+  onChangeStatus(productId: string, status: boolean) {
+    const finalStatus = !status
+    this.isLoadingChangeStatus = true;
+    this.orderService.updateProductStatus(productId, finalStatus).subscribe(
+      (res: any) => {
+        this.isLoadingChangeStatus = false;
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: `Product ${finalStatus ? 'activated' : 'deactivated'} successfully.`
+        });
+        this.getAllProducts();
+      },
+      (err: HttpErrorResponse) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: err.error.message || 'An error occurred while updating the product status.'
+        });
       }
     )
   }

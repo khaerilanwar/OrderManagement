@@ -1,4 +1,22 @@
-import { createCategoryProduct, editProductCategory, getProductCategories, getProducts, removeProductCategory } from "../services/ProductService.js"
+import { changeProductStatus, createCategoryProduct, createProduct, editProduct, editProductCategory, getProductCategories, getProducts, removeProductCategory } from "../services/ProductService.js"
+
+export const createNewProduct = async (req, res) => {
+    try {
+        if (!req.file) return res.status(400).json({ message: "Image is required." })
+
+        const { name, description, categoryId } = req.body
+        const imageName = req.file.filename
+        const response = await createProduct({
+            name, description, image: imageName, categoryId: Number(categoryId)
+        })
+        if (!response.success) return res.status(response.statusCode).json(response)
+
+        return res.status(response.statusCode).json(response)
+    }
+    catch (err) {
+        return res.status(500).json({ message: err.message || "Internal server error." })
+    }
+}
 
 export const getAllProduct = async (req, res) => {
     try {
@@ -16,9 +34,25 @@ export const getAllProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
     try {
         const { id } = req.params
-        const { name, description, image } = req.body
+        const { name, description } = req.body
+        const imageName = req.file ? req.file.filename : null
 
-        const response = await createCategoryProduct({ id, name, description, image })
+        const response = await editProduct(id, { name, description, image: imageName })
+        if (!response.success) return res.status(response.statusCode).json(response)
+
+        return res.status(response.statusCode).json(response)
+    }
+    catch (err) {
+        return res.status(500).json({ message: err.message || "Internal server error." })
+    }
+}
+
+export const updateProductStatus = async (req, res) => {
+    try {
+        const { id } = req.params
+        const { isActive } = req.body
+
+        const response = await changeProductStatus(id, isActive)
         if (!response.success) return res.status(response.statusCode).json(response)
 
         return res.status(response.statusCode).json(response)
