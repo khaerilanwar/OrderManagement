@@ -176,10 +176,12 @@ export const createCustomerOrder = async (orderData) => {
         const category = await prisma.category.findUnique({ where: { id: categoryId } });
         if (!category) return { success: false, statusCode: 404, message: "Category not found!" };
 
-        const maxOrder = Number(
-            (await prisma.order.aggregate({ _max: { id: true } }))._max.id.slice(-4)
-        );
-        const newOrderId = moment().format("YYYYMM") + (maxOrder + 1).toString().padStart(4, '0')
+        const { _max } = await prisma.order.aggregate({ _max: { id: true } });
+
+        const lastOrderNumber = Number((_max.id ?? '').slice(-4)) || 0;
+
+        const newOrderId = moment().format("YYYYMM") + (lastOrderNumber + 1).toString().padStart(4, '0');
+
 
         // Create new order
         const newOrder = await prisma.order.create({

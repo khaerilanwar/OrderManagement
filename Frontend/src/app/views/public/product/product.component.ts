@@ -18,6 +18,7 @@ import { Database } from '@angular/fire/database';
 })
 export class ProductComponent implements OnInit {
   products: any[] = [];
+  resourceUrl: string = 'http://localhost:3000/static/images/';
   // stateOptions: any[] = [
   //   { label: 'All', value: 'all' },
   //   { label: 'Bot', value: 'bot' },
