@@ -58,6 +58,8 @@ model Order {
   customer_id    String
   status_id      Int
   category_id    String
+  product_id     String
+  product        Product          @relation(fields: [product_id], references: [id], onDelete: Cascade)
   customer       Customer         @relation(fields: [customer_id], references: [id], onDelete: Cascade)
   status         Status           @relation(fields: [status_id], references: [id], onDelete: Cascade)
   category       Category         @relation(fields: [category_id], references: [id], onDelete: Cascade)
@@ -87,12 +89,14 @@ model Customer {
   whatsapp     String?     @unique
   telegram     String?
   address      String?
+  balance      Int?        @default(0)
   count_orders Int?        @default(0)
   created_at   DateTime    @default(now())
   updated_at   DateTime    @updatedAt
   orders       Order[]
   testimoni    Testimoni[]
   licenses     License[]
+  topups       TopUp[]
 }
 
 model Testimoni {
@@ -112,9 +116,12 @@ model Product {
   id          String          @id @default(cuid())
   name        String
   description String?
+  price       Int
   image       String?
   video       String?
   category_id Int
+  order_id    String?
+  order       Order[]
   category    ProductCategory @relation(fields: [category_id], references: [id], onDelete: Cascade)
   is_active   Boolean         @default(false)
   created_at  DateTime        @default(now())
@@ -143,4 +150,16 @@ model License {
   customer    Customer  @relation(fields: [customer_id], references: [id], onDelete: Cascade)
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
+}
+
+model TopUp {
+  id          String   @id @db.VarChar(8)
+  customer_id String
+  amount      Int
+  description String?
+  status      Boolean  @default(false)
+  image       String?
+  customer    Customer @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 }

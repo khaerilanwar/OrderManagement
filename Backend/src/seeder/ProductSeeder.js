@@ -10,8 +10,8 @@ async function productSeeder(length = 9) {
 
         const categories = [
             {
-                name: 'Bot',
-                description: 'Bot untuk berbagai keperluan',
+                name: 'Desain',
+                description: 'Desain grafis dan multimedia',
                 created_at: new Date(),
                 updated_at: new Date(),
             },
@@ -41,8 +41,9 @@ async function productSeeder(length = 9) {
         const products = Array.from({ length }, () => ({
             name: fakerID_ID.commerce.product(),
             description: fakerID_ID.lorem.sentence(),
-            image: fakerID_ID.image.urlPicsumPhotos({ width: 300, height: 200 }),
+            image: '1749482728930-967782280.jpg',
             category_id: fakerID_ID.helpers.arrayElement(categoryId).id,
+            price: fakerID_ID.number.int({ min: 100000, max: 1000000 }),
             is_active: true,
             created_at: new Date(),
             updated_at: new Date(),

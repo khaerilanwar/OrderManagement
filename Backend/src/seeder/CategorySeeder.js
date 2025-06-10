@@ -48,6 +48,14 @@ async function categorySeeder(length = 10) {
                 created_at: new Date(),
                 updated_at: new Date()
             },
+            {
+                id: '1',
+                name: 'Produk Digital',
+                description: 'Kategori Produk Digital',
+                product_category_id: fakerID_ID.helpers.arrayElement(productCategoryId).id,
+                created_at: new Date(),
+                updated_at: new Date()
+            },
         ]
 
         await prisma.category.createMany({ data: categories });

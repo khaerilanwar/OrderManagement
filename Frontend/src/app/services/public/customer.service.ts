@@ -9,4 +9,8 @@ export class CustomerService {
   constructor(
     private http: HttpClient
   ) { }
+
+  getCustomerById(id: string) {
+    return this.http.get(`/customer/${id}`);
+  }
 }

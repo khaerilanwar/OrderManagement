@@ -52,3 +52,16 @@ export const getAllCustomers = async () => {
         return { success: false, statusCode: 500, message: error.message || 'Internal server error!' }
     }
 }
+
+export const getCustomerById = async (id) => {
+    try {
+        const customer = await prisma.customer.findUnique({ where: { id } })
+
+        if (!customer) return { success: false, statusCode: 404, message: "Pelanggan tidak ditemukan!" }
+
+        return { success: true, statusCode: 200, message: "Pelanggan berhasil diambil!", data: customer }
+    }
+    catch (error) {
+        return { success: false, statusCode: 500, message: error.message || 'Internal server error!' }
+    }
+}

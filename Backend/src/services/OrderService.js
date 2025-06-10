@@ -5,14 +5,19 @@ import ExcelJs from 'exceljs'
 
 export const listOrders = async () => {
     try {
-        const data = (await prisma.order.findMany({
+        const data = await prisma.order.findMany({
             orderBy: [{ created_at: "desc" }, { title: "asc" }],
             include: {
                 customer: true,
                 category: true,
-                status: true
+                status: true,
+                product: {
+                    include: {
+                        category: true
+                    }
+                },
             }
-        })).map((item) => new OrderDTO(item))
+        })
 
         return { success: true, statusCode: 200, data };
     }
@@ -29,6 +34,11 @@ export const orderDetail = async (id) => {
                 customer: true,
                 category: true,
                 status: true,
+                product: {
+                    include: {
+                        category: true
+                    }
+                },
                 TimelineStatus: {
                     include: {
                         status: true
@@ -143,7 +153,12 @@ export const customerListOrders = async (customerId) => {
             include: {
                 category: true,
                 status: true,
-                testimoni: true
+                testimoni: true,
+                product: {
+                    include: {
+                        category: true
+                    }
+                }
             }
         }).then((items) => items.map((item) => ({
             id: item.id,
@@ -151,13 +166,16 @@ export const customerListOrders = async (customerId) => {
             invoice: item.invoice,
             status: item.status.name,
             rating: item.testimoni !== null ? item.testimoni.rating : 0,
-            category: item.category.name,
+            category: item.product.category.name,
             createdAt: item.created_at
         })))
 
+        const customer = await prisma.customer.findUnique({ where: { id: customerId } })
+        const license = await prisma.license.findMany({ where: { customer_id: customerId } })
+
         if (!data || data.length === 0) return { success: false, statusCode: 404, message: "No orders found for this customer!" }
 
-        return { success: true, statusCode: 200, message: "Orders retrieved successfully!", data };
+        return { success: true, statusCode: 200, message: "Orders retrieved successfully!", data: { data, customer, license } };
     }
     catch (err) {
         return { success: false, statusCode: 500, message: err.message || "Internal server error." }
@@ -166,7 +184,7 @@ export const customerListOrders = async (customerId) => {
 
 export const createCustomerOrder = async (orderData) => {
     try {
-        const { orderName, orderDescription, customerId, categoryId } = orderData;
+        const { orderName, orderDescription, invoice, customerId, categoryId, productId } = orderData;
 
         // Check if customer exists
         const customer = await prisma.customer.findUnique({ where: { id: customerId } });
@@ -175,6 +193,9 @@ export const createCustomerOrder = async (orderData) => {
         // Check if category exists
         const category = await prisma.category.findUnique({ where: { id: categoryId } });
         if (!category) return { success: false, statusCode: 404, message: "Category not found!" };
+
+        const product = await prisma.product.findUnique({ where: { id: productId } });
+        if (!product) return { success: false, statusCode: 404, message: "Product not found!" };
 
         const { _max } = await prisma.order.aggregate({ _max: { id: true } });
 
@@ -189,23 +210,39 @@ export const createCustomerOrder = async (orderData) => {
                 id: newOrderId,
                 title: orderName,
                 description: orderDescription,
-                invoice: 0,
+                invoice,
+                down_payment: invoice,
+                product_id: productId,
                 customer_id: customerId,
                 category_id: categoryId,
-                status_id: 1,
+                status_id: 3,
                 created_at: new Date(),
                 updated_at: new Date()
             }
         })
 
         // Create initial timeline status
-        const status = await prisma.status.findUnique({ where: { id: 1 } });
-        await prisma.timelineStatus.create({
+        for (let i = 1; i <= newOrder.status_id; i++) {
+            const status = await prisma.status.findUnique({ where: { id: i } });
+            if (!status || status.id === 2) continue;
+
+            await prisma.timelineStatus.create({
+                data: {
+                    sequence: i,
+                    status_id: status.id,
+                    description: status.description || "Order created",
+                    order_id: newOrder.id,
+                }
+            });
+        }
+
+        // Kurangi saldo
+        await prisma.customer.update({
+            where: { id: customerId },
             data: {
-                sequence: 1,
-                status_id: 1, // Assuming 1 is the initial status
-                description: status.description || "Order created",
-                order_id: newOrder.id,
+                balance: {
+                    decrement: invoice
+                }
             }
         });
 

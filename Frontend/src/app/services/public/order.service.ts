@@ -16,10 +16,10 @@ export class OrderService {
     return this.http.get(`/order/customer/${customerId}`);
   }
 
-  createCustomerOrder(customerId: string, categoryId: string, orderName: string, orderDescription: string) {
+  createCustomerOrder(customerId: string, categoryId: string, orderName: string, orderDescription: string, invoice: number, productId: string) {
     return this.http.post(
       '/order/customer',
-      { customerId, categoryId, orderName, orderDescription }
+      { customerId, categoryId, orderName, orderDescription, invoice, productId }
     )
   }
 

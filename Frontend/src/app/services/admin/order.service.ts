@@ -32,7 +32,7 @@ export class OrderService {
     }
 
     getAllProducts() {
-        return this.http.get('/product');
+        return this.http.get('/productadmin');
     }
 
     createNewProduct(data: any, file: File | null = null) {

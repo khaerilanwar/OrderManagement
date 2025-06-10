@@ -37,10 +37,15 @@ export class AppMenu {
                                 icon: 'pi pi-fw pi-caret-right',
                                 routerLink: ['/admin/order/list']
                             },
+                            // {
+                            //     label: 'Category',
+                            //     icon: 'pi pi-fw pi-caret-right',
+                            //     routerLink: ['/admin/order/category']
+                            // },
                             {
-                                label: 'Category',
+                                label: 'Top Up',
                                 icon: 'pi pi-fw pi-caret-right',
-                                routerLink: ['/admin/order/category']
+                                routerLink: ['/admin/order/topup']
                             },
                             {
                                 label: 'Report',

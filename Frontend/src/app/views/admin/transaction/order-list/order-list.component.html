@@ -33,13 +33,6 @@
                 </th>
                 <th style="min-width: 10rem">
                     <div class="flex justify-between items-center">
-                        Customer
-                        <p-columnFilter type="text" field="cutomer" display="menu"
-                            placeholder="Search by customer"></p-columnFilter>
-                    </div>
-                </th>
-                <th style="min-width: 10rem">
-                    <div class="flex justify-between items-center">
                         Category
                         <p-columnFilter field="category" matchMode="equals" display="menu">
                             <ng-template #filter let-value let-filter="filterCallback">
@@ -52,6 +45,13 @@
                                 </p-select>
                             </ng-template>
                         </p-columnFilter>
+                    </div>
+                </th>
+                <th style="min-width: 10rem">
+                    <div class="flex justify-between items-center">
+                        Customer
+                        <p-columnFilter type="text" field="cutomer" display="menu"
+                            placeholder="Search by customer"></p-columnFilter>
                     </div>
                 </th>
                 <th style="min-width: 10rem">
@@ -94,20 +94,20 @@
                     {{ limitString(order.title, 30) }}
                 </td>
                 <td>
-                    {{ order.customer }}
+                    {{ order.product.category.name }}
                 </td>
                 <td>
-                    {{ order.category }}
+                    {{ order.customer.name }}
                 </td>
                 <td>
                     {{ order.invoice | currency: 'Rp. ' : 'symbol' : '1.0' }}
                 </td>
                 <td>
-                    <p-tag [value]="order.status" [severity]="getSeverity(order.status)"
+                    <p-tag [value]="order.status.detail" [severity]="getSeverity(order.status.detail)"
                         styleClass="dark:!bg-surface-900" />
                 </td>
                 <td>
-                    {{ order.createdAt | date: 'dd MMM yyyy' }}
+                    {{ order.created_at | date: 'dd MMM yyyy' }}
                 </td>
             </tr>
         </ng-template>

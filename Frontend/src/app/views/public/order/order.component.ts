@@ -18,10 +18,11 @@ import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { Router, RouterModule } from '@angular/router';
 import { RatingModule } from 'primeng/rating';
+import { TabsModule } from 'primeng/tabs';
 
 @Component({
   selector: 'app-order',
-  imports: [RouterModule, RatingModule, ButtonModule, DialogModule, Tag, CommonModule, DropdownModule, DataView, SelectModule, FormsModule, InputTextModule, TextareaModule, ToastModule],
+  imports: [RouterModule, RatingModule, ButtonModule, DialogModule, Tag, CommonModule, DropdownModule, DataView, SelectModule, FormsModule, InputTextModule, TextareaModule, ToastModule, TabsModule],
   templateUrl: './order.component.html',
   styleUrl: './order.component.scss'
 })
@@ -31,6 +32,8 @@ export class OrderComponent {
   displayModal: boolean = false;
   testiModal: boolean = false;
   categories: string[] = []
+  customer: any = {};
+  license: any[] = [];
 
   // New Order Form
   orderName: string = '';
@@ -79,7 +82,9 @@ export class OrderComponent {
       customerId,
       this.selectedCategory?.id,
       this.orderName,
-      this.orderDescription
+      this.orderDescription,
+      0,
+      ''
     ).subscribe(
       (res: any) => {
         this.orderName = this.orderDescription = ''
@@ -105,6 +110,22 @@ export class OrderComponent {
         })
       }
     )
+  }
+
+  onCopyToken(token: any) {
+    navigator.clipboard.writeText(token).then(() => {
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Success',
+        detail: 'Token copied to clipboard'
+      });
+    }).catch((err) => {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Failed to copy token'
+      });
+    });
   }
 
   onSaveTesti() {
@@ -164,7 +185,9 @@ export class OrderComponent {
       (res: any) => {
         this.spinner.hide();
         this.hasOrders = res.data.length > 0;
-        this.orders.set(res.data);
+        this.orders.set(res.data.data);
+        this.customer = res.data.customer;
+        this.license = res.data.license || [];
       },
       (err: HttpErrorResponse) => {
         this.spinner.hide();

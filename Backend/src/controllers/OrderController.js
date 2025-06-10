@@ -70,9 +70,9 @@ export const getListOrderCustomer = async (req, res) => {
 
 export const createOrderCustomer = async (req, res) => {
     try {
-        const { customerId, categoryId, orderName, orderDescription } = req.body
+        const { customerId, invoice, categoryId, orderName, orderDescription, productId } = req.body
 
-        const response = await createCustomerOrder({ customerId, categoryId, orderName, orderDescription })
+        const response = await createCustomerOrder({ customerId, categoryId, orderName, orderDescription, invoice, productId })
         if (!response.success) return res.status(response.statusCode).json(response)
 
         return res.status(response.statusCode).json(response)

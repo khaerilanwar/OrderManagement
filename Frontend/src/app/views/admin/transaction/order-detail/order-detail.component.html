@@ -18,7 +18,7 @@
                         <tr>
                             <td class="font-semibold">Kategori</td>
                             <td>:</td>
-                            <td>{{ order?.category.name }}</td>
+                            <td>{{ order?.product.category.name }}</td>
                         </tr>
                         <tr>
                             <td class="font-semibold">Status Pesanan</td>
@@ -118,7 +118,7 @@
 </p-card>
 
 <p-dialog [header]="headerModal" [closeOnEscape]="true" [dismissableMask]="true" [modal]="true" [(visible)]="openModal"
-    [style]="{ width: '30rem' }" po>
+    [style]="{ width: '30rem' }">
     @if (headerModal === 'Edit Order') {
     <div class="flex flex-col gap-2 mb-4">
         <label for="status">Status</label>

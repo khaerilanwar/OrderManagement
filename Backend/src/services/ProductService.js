@@ -5,6 +5,25 @@ import path from "path"
 export const getProducts = async () => {
     try {
         const data = await prisma.product.findMany({
+            where: {
+                is_active: true
+            },
+            include: {
+                category: true
+            },
+            orderBy: [{ created_at: "desc" }, { name: "asc" }],
+        })
+
+        return { success: true, statusCode: 200, message: "Products retrieved successfully.", data }
+    }
+    catch (error) {
+        return { success: false, statusCode: 500, message: error.message || "Internal server error." }
+    }
+}
+
+export const getAdminProducts = async () => {
+    try {
+        const data = await prisma.product.findMany({
             include: {
                 category: true
             },

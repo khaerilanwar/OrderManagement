@@ -1,4 +1,4 @@
-import { changeProductStatus, createCategoryProduct, createProduct, editProduct, editProductCategory, getProductCategories, getProducts, removeProductCategory } from "../services/ProductService.js"
+import { changeProductStatus, createCategoryProduct, createProduct, editProduct, editProductCategory, getAdminProducts, getProductCategories, getProducts, removeProductCategory } from "../services/ProductService.js"
 
 export const createNewProduct = async (req, res) => {
     try {
@@ -11,6 +11,17 @@ export const createNewProduct = async (req, res) => {
         })
         if (!response.success) return res.status(response.statusCode).json(response)
 
+        return res.status(response.statusCode).json(response)
+    }
+    catch (err) {
+        return res.status(500).json({ message: err.message || "Internal server error." })
+    }
+}
+
+export const getAllAdminProduct = async (req, res) => {
+    try {
+        const response = await getAdminProducts()
+        if (!response.success) return res.status(response.statusCode).json(response)
         return res.status(response.statusCode).json(response)
     }
     catch (err) {

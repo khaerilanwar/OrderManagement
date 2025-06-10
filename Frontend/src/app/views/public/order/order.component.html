@@ -1,65 +1,117 @@
 <div class="card max-w-screen-lg center mx-auto">
-    <p-dataview #dv [value]="orders()" emptyMessage="Belum ada pesanan" paginator="true" [rows]="5"
-        [paginator]="orders() > 5">
-        <ng-template #header>
-            <div class="flex flex-col md:flex-row md:justify-between">
-                <p-button severity="info" label="Chat Admin" icon="pi pi-comment" (click)="redirectChatPage()" />
-                <p-button label="Tambah Pesanan" icon="pi pi-plus" (click)="onToggleModal('order')" />
-            </div>
-        </ng-template>
-        <ng-template #list let-items>
-            <div class="grid grid-cols-12 gap-4 grid-nogutter">
-                <div class="col-span-12" *ngFor="let item of items; let first = first">
-                    <div class="flex flex-col sm:flex-row sm:items-center p-6 gap-4"
-                        [ngClass]="{ 'border-t border-surface-200 dark:border-surface-700': !first }">
-                        <div class="flex flex-col md:flex-row justify-between md:items-center flex-1 gap-6">
-                            <div class="flex flex-row md:flex-col justify-between items-start gap-2">
-                                <div>
-                                    <span class="font-medium text-secondary">{{ item.title }}</span>
-                                    <div class="text-lg font-medium text-surface-900 dark:text-surface-0 mt-2">{{
-                                        item.category }}</div>
-                                </div>
-                                <div class="flex gap-3">
-                                    <p-tag [value]="item.status" [severity]="getSeverity(item)"
-                                        styleClass="dark:!bg-surface-900" [style.left.px]="4" [style.top.px]="4" />
-                                    @if (item.status === "Selesai") {
-                                    <div class="bg-surface-100 p-1" style="border-radius: 30px"
-                                        *ngIf="item.rating !== 0">
-                                        <div class="bg-surface-0 flex items-center gap-2 justify-center py-1 px-2"
-                                            style="
+    <div class="bg-gray-50 shadow-md p-4 mb-7 rounded-md mx-4">
+        <p class="text-lg font-medium mb-2">Saldo</p>
+        <p class="m-0 text-xl font-semibold"> {{customer.balance | currency: 'Rp. ' : 'symbol' : '1.0'}} </p>
+    </div>
+    <p-tabs value="order">
+        <p-tablist class="px-4">
+            <p-tab class="w-1/2" value="order">Pesanan Saya</p-tab>
+            <p-tab class="w-1/2" value="token">Lisensi Saya</p-tab>
+        </p-tablist>
+        <p-tabpanels>
+            <p-tabpanel value="order">
+                <p-dataview #dv [value]="orders()" emptyMessage="Belum ada pesanan" paginator="true" [rows]="5"
+                    [paginator]="orders() > 5">
+                    <ng-template #header>
+                        <div class="flex flex-col md:flex-row md:justify-between">
+                            <p-button severity="info" label="Chat Admin" icon="pi pi-comment"
+                                (click)="redirectChatPage()" />
+                            <p-button label="Tambah Pesanan" icon="pi pi-plus" (click)="onToggleModal('order')" />
+                        </div>
+                    </ng-template>
+                    <ng-template #list let-items>
+                        <div class="grid grid-cols-12 gap-4 grid-nogutter">
+                            <div class="col-span-12" *ngFor="let item of items; let first = first">
+                                <div class="flex flex-col sm:flex-row sm:items-center p-6 gap-4"
+                                    [ngClass]="{ 'border-t border-surface-200 dark:border-surface-700': !first }">
+                                    <div class="flex flex-col md:flex-row justify-between md:items-center flex-1 gap-6">
+                                        <div class="flex flex-row md:flex-col justify-between items-start gap-2">
+                                            <div>
+                                                <span class="font-medium text-secondary">{{ item.title }}</span>
+                                                <div
+                                                    class="text-lg font-medium text-surface-900 dark:text-surface-0 mt-2">
+                                                    {{
+                                                    item.category }}</div>
+                                            </div>
+                                            <div class="flex gap-3 items-center">
+                                                <p class="m-0 font-medium">
+                                                    {{item.createdAt | date: 'yyyy-MM-dd HH:mm' }}
+                                                </p>
+                                                <p-tag [value]="item.status" [severity]="getSeverity(item)"
+                                                    styleClass="dark:!bg-surface-900 p-6" [style.left.px]="4"
+                                                    [style.top.px]="4" />
+                                                @if (item.status === "Selesai") {
+                                                <div class="bg-surface-100 p-1" style="border-radius: 30px"
+                                                    *ngIf="item.rating !== 0">
+                                                    <div class="bg-surface-0 flex items-center gap-2 justify-center py-1 px-2"
+                                                        style="
                                                             border-radius: 30px;
                                                             box-shadow:
                                                                 0px 1px 2px 0px rgba(0, 0, 0, 0.04),
                                                                 0px 1px 2px 0px rgba(0, 0, 0, 0.06);
                                                         ">
-                                            <span class="text-surface-900 font-medium text-sm">{{ item.rating }}</span>
-                                            <i class="pi pi-star-fill text-yellow-500"></i>
+                                                        <span class="text-surface-900 font-medium text-sm">{{
+                                                            item.rating }}</span>
+                                                        <i class="pi pi-star-fill text-yellow-500"></i>
+                                                    </div>
+                                                </div>
+
+                                                <div *ngIf="item.rating === 0">
+                                                    <p-button label="Testimoni" variant="outlined" severity="help"
+                                                        size="small" (onClick)="onDisplayTesti(item.id)" />
+                                                </div>
+                                                }
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col md:items-end gap-8">
+                                            <span class="text-xl font-semibold text-surface-900 dark:text-surface-0">{{
+                                                item.invoice | currency: 'Rp. ' : 'symbol' : '1.0'
+                                                }}</span>
+                                            <div class="flex flex-row-reverse md:flex-row gap-2">
+                                                <p-button [outlined]="true" [label]="'ID : ' + item.id" />
+                                                <p-button (click)="router.navigate(['/detail-order/' + item.id])"
+                                                    class="flex-auto md:flex-initial whitespace-nowrap"
+                                                    label="Detail Pesanan" />
+                                            </div>
                                         </div>
                                     </div>
-
-                                    <div *ngIf="item.rating === 0">
-                                        <p-button label="Testimoni" variant="outlined" severity="help" size="small"
-                                            (onClick)="onDisplayTesti(item.id)" />
-                                    </div>
-                                    }
-                                </div>
-                            </div>
-                            <div class="flex flex-col md:items-end gap-8">
-                                <span class="text-xl font-semibold text-surface-900 dark:text-surface-0">{{
-                                    item.invoice | currency: 'Rp. ' : 'symbol' : '1.0'
-                                    }}</span>
-                                <div class="flex flex-row-reverse md:flex-row gap-2">
-                                    <p-button [outlined]="true" [label]="'ID : ' + item.id" />
-                                    <p-button (click)="router.navigate(['/detail-order/' + item.id])"
-                                        class="flex-auto md:flex-initial whitespace-nowrap" label="Detail Pesanan" />
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </ng-template>
-    </p-dataview>
+                    </ng-template>
+                </p-dataview>
+            </p-tabpanel>
+            <p-tabpanel value="token">
+                <p-dataview #dv [value]="license" emptyMessage="Belum ada lisensi" paginator="true" [rows]="5"
+                    [paginator]="license.length > 5">
+                    <ng-template #list let-tokens>
+                        <div class="grid grid-cols-12 gap-4 grid-nogutter">
+                            <div class="col-span-12" *ngFor="let token of tokens; let first = first">
+                                <div class="flex justify-between p-5">
+                                    <div class="flex flex-col gap-2">
+                                        <p class="m-0 font-semibold text-lg uppercase"> {{ token.name }} </p>
+                                        <p
+                                            class="m-0 font-medium border bg-gray-500 text-gray-50 text-sm p-2 rounded-md">
+                                            {{
+                                            token.token
+                                            }}
+                                        </p>
+                                    </div>
+                                    <div class="flex flex-col items-end">
+                                        <p class="font-medium text-base"> Expire : {{token.expire_date | date:
+                                            'dd-MM-yyyy'}} </p>
+                                        <p-button class="" label="Copy" icon="pi pi-copy" severity="secondary"
+                                            (click)="onCopyToken(token.token)" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-template>
+                </p-dataview>
+            </p-tabpanel>
+        </p-tabpanels>
+    </p-tabs>
+
 </div>
 
 <p-toast class="font-medium" />

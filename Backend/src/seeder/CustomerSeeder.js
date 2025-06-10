@@ -1,4 +1,4 @@
-import { faker, fakerID_ID } from "@faker-js/faker";
+import { fakerID_ID } from "@faker-js/faker";
 import { printLog } from "../utils/Helper.js";
 import { prisma } from "../config/Database.js";
 
@@ -16,6 +16,7 @@ async function customerSeeder(length = 30) {
                 whatsapp: "081234567890",
                 telegram: "https://t.me/banganwar",
                 address: "Brebes, Jawa Tengah",
+                balance: 1210828,
                 created_at: new Date(),
                 updated_at: new Date(),
             }
@@ -28,6 +29,7 @@ async function customerSeeder(length = 30) {
             phone: fakerID_ID.phone.number(),
             telegram: fakerID_ID.book.genre(),
             whatsapp: fakerID_ID.phone.number(),
+            balance: fakerID_ID.number.int({ min: 50000, max: 500000 }),
             address: fakerID_ID.location.streetAddress(),
             count_orders: fakerID_ID.number.int({ min: 0, max: 10 }),
             created_at: new Date(),
