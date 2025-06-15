@@ -41,6 +41,7 @@ export const getTestimoni = async () => {
                 customer: true
             },
             orderBy: [{ created_at: "desc" }],
+            take: 8
         })
 
         return { success: true, statusCode: 200, message: "Berhasil mendapatkan testimoni!", data }

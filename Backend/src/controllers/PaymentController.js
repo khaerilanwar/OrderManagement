@@ -126,7 +126,8 @@ export const successPayment = async (req, res) => {
     try {
         const { order_id, gross_amount, transaction_time, productId, customerId, productCategory, licenseId } = req.body;
 
-        const finishedStatus = await prisma.status.findUnique({ where: { id: 4 } })
+        const statusOrder = [2, 4].includes(Number(productCategory)) ? 5 : 4;
+        const finishedStatus = await prisma.status.findUnique({ where: { id: statusOrder } })
         const productSelected = await prisma.product.findUnique({ where: { id: productId } })
 
         await prisma.order.create({
@@ -147,36 +148,57 @@ export const successPayment = async (req, res) => {
             }
         })
 
-        const timelineData = [1, 2, 4]
-        timelineData.forEach(async (item, idx) => {
-            let status = await prisma.status.findUnique({ where: { id: item } })
-            await prisma.timelineStatus.create({
-                data: {
-                    sequence: idx + 1,
-                    description: status.description,
-                    status_id: status.id,
-                    order_id: order_id,
-                    created_at: new Date(),
-                    updated_at: new Date()
-                }
+        // langsung selesai
+        if ((productCategory == 4 && licenseId) || productCategory == 2) {
+            const timelineData = [1, 2, 4, 5]
+            timelineData.forEach(async (item, idx) => {
+                let status = await prisma.status.findUnique({ where: { id: item } })
+                await prisma.timelineStatus.create({
+                    data: {
+                        sequence: idx + 1,
+                        description: status.description,
+                        status_id: status.id,
+                        order_id: order_id,
+                        created_at: new Date(),
+                        updated_at: new Date()
+                    }
+                })
             })
-        })
 
-        if (productCategory == 4 && licenseId) {
-            const quantity = Number(gross_amount) / productSelected.price
-            const addDays = quantity * 7
-            const licenseSelected = await prisma.license.findUnique({ where: { id: licenseId } })
-            const curDate = new Date(licenseSelected.expire_date)
-            const newExpireDate = curDate > new Date() ? new Date() : curDate
-            newExpireDate.setDate(newExpireDate.getDate() + addDays)
+            // license
+            if (productCategory == 4) {
+                const quantity = Number(gross_amount) / productSelected.price
+                const addDays = quantity * 7
+                const licenseSelected = await prisma.license.findUnique({ where: { id: licenseId } })
+                const curDate = new Date(licenseSelected.expire_date)
+                const newExpireDate = curDate > new Date() ? curDate : new Date()
+                newExpireDate.setDate(newExpireDate.getDate() + addDays)
 
-            await prisma.license.update({
-                where: {
-                    id: licenseId
-                },
-                data: {
-                    expire_date: newExpireDate
-                }
+                await prisma.license.update({
+                    where: {
+                        id: licenseId
+                    },
+                    data: {
+                        expire_date: newExpireDate
+                    }
+                })
+            }
+        }
+        // diproses admin
+        else {
+            const timelineData = [1, 2, 4]
+            timelineData.forEach(async (item, idx) => {
+                let status = await prisma.status.findUnique({ where: { id: item } })
+                await prisma.timelineStatus.create({
+                    data: {
+                        sequence: idx + 1,
+                        description: status.description,
+                        status_id: status.id,
+                        order_id: order_id,
+                        created_at: new Date(),
+                        updated_at: new Date()
+                    }
+                })
             })
         }
 

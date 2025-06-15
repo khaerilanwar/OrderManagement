@@ -164,3 +164,12 @@ model TopUp {
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 }
+
+model GameAccount {
+  id         String   @id @default(cuid())
+  name       String
+  email      String?  @unique
+  password   String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}

@@ -34,15 +34,9 @@ export class ProductComponent implements OnInit {
   subTotal: number = 0;
   customer: any = null;
   clientKey: string = environment.midtransClientKey
+  openDetail: boolean = false
   licenseCustomer: any[] = []
   licenseSelected: any = null;
-  // stateOptions: any[] = [
-  //   { label: 'All', value: 'all' },
-  //   { label: 'Bot', value: 'bot' },
-  //   { label: 'Web', value: 'web' },
-  //   { label: 'Design', value: 'design' }
-  // ];
-  // value: string = 'all';
 
   constructor(
     private orderService: OrderService,
@@ -59,6 +53,11 @@ export class ProductComponent implements OnInit {
     if (this.authService.isAuthCustomer()) {
       this.getCustomer();
     }
+  }
+
+  onOpenDetail(item: any) {
+    this.openDetail = true
+    this.productSelected = item
   }
 
   onOpenModal(product: any) {

@@ -65,6 +65,13 @@
     </div>
     }
 
+
+    <div class="flex flex-col gap-2 mb-4">
+        <label for="price" class="font-medium">Product Price</label>
+        <p-inputNumber [(ngModel)]="productPrice" id="price" mode="currency" currency="IDR" locale="id-ID"
+            class="w-full" minFractionDigits="0" />
+    </div>
+
     <div class="flex flex-col gap-2 mb-8">
         <label for="description" class="font-semibold w-24">Description</label>
         <textarea pTextarea rows="4" id="description" [(ngModel)]="inputDescription"></textarea>

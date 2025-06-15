@@ -13,10 +13,11 @@ import { OrderService } from '../../../../services/admin/order.service';
 import { MessageService } from 'primeng/api';
 import { HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment.development';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 @Component({
   selector: 'app-product-list',
-  imports: [TableModule, CommonModule, FileUploadModule, InputTextModule, SelectModule, ButtonModule, TagModule, FormsModule, DrawerModule, TextareaModule],
+  imports: [TableModule, InputNumberModule, CommonModule, FileUploadModule, InputTextModule, SelectModule, ButtonModule, TagModule, FormsModule, DrawerModule, TextareaModule],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss'
 })
@@ -32,6 +33,7 @@ export class ProductListComponent implements OnInit {
   // form input
   inputName: string = '';
   inputDescription: string = '';
+  productPrice: number = 0;
   categorySelected!: any
 
   constructor(

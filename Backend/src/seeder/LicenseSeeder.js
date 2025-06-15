@@ -41,8 +41,25 @@ async function licenseSeeder(length = 20) {
             updated_at: new Date()
         }));
 
-        await prisma.license.createMany({ data: tokenLicenses });
-        await prisma.license.createMany({ data: tokenLicensesDev });
+        const tokenDev = [
+            {
+                name: 'Bot Sosial Media',
+                description: 'Lisensi bot untuk sosial media akun facebook, instagram, twitter, tiktok, youtube, telegram, whatsapp',
+                token: crypto.randomBytes(32).toString('hex'),
+                customer_id: customer_dev.id,
+                usage_limit: 100,
+                used_count: 0,
+                expire_date: fakerID_ID.date.between(
+                    { from: new Date('2025-06-15'), to: new Date('2025-07-27') }
+                ),
+                created_at: new Date(),
+                updated_at: new Date()
+            }
+        ]
+
+        // await prisma.license.createMany({ data: tokenLicenses });
+        // await prisma.license.createMany({ data: tokenLicensesDev });
+        await prisma.license.createMany({ data: tokenDev });
         printLog(`Created ${length} new token license.`);
     }
     catch (error) {
