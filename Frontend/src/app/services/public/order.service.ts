@@ -39,4 +39,25 @@ export class OrderService {
   getAllProducts() {
     return this.http.get('/product');
   }
+
+  createPaymentToken(productId: string, quantity: number, customerId: string) {
+    return this.http.post(
+      '/order/payment-tokenizer',
+      { productId, quantity, customerId }
+    );
+  }
+
+  onPendingPayment(data: any) {
+    return this.http.post(
+      '/order/payment-pending',
+      data
+    )
+  }
+
+  onSuccessPayment(data: any) {
+    return this.http.post(
+      '/order/payment-success',
+      data
+    );
+  }
 }

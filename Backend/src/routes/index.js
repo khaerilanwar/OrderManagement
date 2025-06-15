@@ -11,6 +11,7 @@ import { getAllTestimoni } from "../controllers/TestimoniController.js"
 import { getAllAdminProduct, getAllProduct } from "../controllers/ProductController.js"
 import productRoute from "./ProductRoutes.js"
 import { prisma } from "../config/Database.js"
+import { testDokuSandbox } from "../controllers/PaymentController.js"
 
 const router = express.Router()
 router.get("/", (req, res) => {
@@ -131,6 +132,9 @@ router.get("/dashboard", verifyToken, async (req, res) => {
         })
     }
 })
+
+// Payment route
+router.get("/cek-payment", testDokuSandbox)
 
 // Utility routes
 router.use("/auth", authRoute)

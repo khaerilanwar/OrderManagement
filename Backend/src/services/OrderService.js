@@ -171,7 +171,7 @@ export const customerListOrders = async (customerId) => {
         })))
 
         const customer = await prisma.customer.findUnique({ where: { id: customerId } })
-        const license = await prisma.license.findMany({ where: { customer_id: customerId } })
+        const license = await prisma.license.findMany({ where: { customer_id: customerId }, orderBy: [{ expire_date: 'asc' }] })
 
         if (!data || data.length === 0) return { success: false, statusCode: 404, message: "No orders found for this customer!" }
 

@@ -21,6 +21,16 @@
                             <td>{{ order?.product.category.name }}</td>
                         </tr>
                         <tr>
+                            <td class="font-semibold">Quantity</td>
+                            <td>:</td>
+                            <td>
+                                {{ order?.invoice / order?.product.price }}
+                                @if (order?.product.category.id == 4) {
+                                minggu
+                                }
+                            </td>
+                        </tr>
+                        <tr>
                             <td class="font-semibold">Status Pesanan</td>
                             <td>:</td>
                             <td>

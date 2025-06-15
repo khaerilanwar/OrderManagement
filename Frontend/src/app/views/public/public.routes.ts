@@ -6,6 +6,7 @@ import { DetailComponent } from "./detail/detail.component";
 import { ProductComponent } from "./product/product.component";
 import { TestimoniComponent } from "./testimoni/testimoni.component";
 import { ChattingComponent } from "./chatting/chatting.component";
+import { SuccessPaymentComponent } from "./success-payment/success-payment.component";
 
 export default [
     { path: '', component: MainComponent },
@@ -31,5 +32,10 @@ export default [
         canActivate: [authCustomerGuard],
         path: 'chat',
         component: ChattingComponent
-    }
+    },
+    {
+        canActivate: [authCustomerGuard],
+        path: 'success',
+        component: SuccessPaymentComponent
+    },
 ] as Routes

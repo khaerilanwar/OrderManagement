@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
 import { OrderService } from '../../../../services/admin/order.service';
 import { MessageService } from 'primeng/api';
 import { HttpErrorResponse } from '@angular/common/http';
+import { environment } from '../../../../../environments/environment.development';
 
 @Component({
   selector: 'app-product-list',
@@ -20,7 +21,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   styleUrl: './product-list.component.scss'
 })
 export class ProductListComponent implements OnInit {
-  resourceUrl: string = 'http://localhost:3000/static/images/';
+  resourceUrl: string = environment.resourceUrl;
   products: any[] = []
   displayDrawer: boolean = false;
   categories: any[] = [];

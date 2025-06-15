@@ -42,11 +42,11 @@ export class AppMenu {
                             //     icon: 'pi pi-fw pi-caret-right',
                             //     routerLink: ['/admin/order/category']
                             // },
-                            {
-                                label: 'Top Up',
-                                icon: 'pi pi-fw pi-caret-right',
-                                routerLink: ['/admin/order/topup']
-                            },
+                            // {
+                            //     label: 'Top Up',
+                            //     icon: 'pi pi-fw pi-caret-right',
+                            //     routerLink: ['/admin/order/topup']
+                            // },
                             {
                                 label: 'Report',
                                 icon: 'pi pi-fw pi-caret-right',

@@ -15,6 +15,20 @@ async function orderSeeder(length = 30) {
         const products = await prisma.product.findMany({})
         const status_id = await prisma.status.findMany({ select: { id: true } });
 
+        // Membuat topup data
+        const topup = Array.from({ length }, (_, index) => ({
+            id: moment().format("YYYY") + (index + 1).toString().padStart(4, '0'),
+            customer_id: fakerID_ID.helpers.arrayElement(customers_id).id,
+            amount: fakerID_ID.number.int({ min: 100000, max: 1000000 }),
+            description: fakerID_ID.lorem.sentence(),
+            status: false,
+            image: 'bukti bayar.jpg',
+            created_at: new Date(),
+            updated_at: new Date(),
+        }));
+
+        await prisma.topUp.createMany({ data: topup });
+
         // Membuat 10 kategori baru
         const orders = Array.from({ length }, (_, index) => {
             const productId = fakerID_ID.helpers.arrayElement(products_id).id;
@@ -29,6 +43,7 @@ async function orderSeeder(length = 30) {
                 customer_id: fakerID_ID.helpers.arrayElement(customers_id).id,
                 product_id: productId,
                 description: description,
+                adjusted: true,
                 // status_id: fakerID_ID.helpers.arrayElement(status_id).id,
                 status_id: 5,
                 category_id: fakerID_ID.helpers.arrayElement(categories_id).id,

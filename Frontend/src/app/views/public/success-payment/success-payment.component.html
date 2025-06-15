@@ -1,0 +1,22 @@
+<!-- success.component.html -->
+<div class="fixed inset-0 bg-green-50 flex items-center justify-center z-50 success-screen">
+    <div class="text-center p-6">
+        <!-- Icon centang -->
+        <div class="bg-green-100 w-24 h-24 flex items-center justify-center rounded-full mx-auto shadow-md">
+            <svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" stroke-width="3"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+        </div>
+
+        <!-- Teks -->
+        <h1 class="text-2xl md:text-3xl font-semibold text-green-700 mt-6">Pembayaran Berhasil</h1>
+        <p class="text-gray-600 mt-2 mb-6">Terima kasih, transaksi Anda telah diproses.</p>
+
+        <!-- Tombol Navigasi -->
+        <button (click)="redirectToOrder()"
+            class="px-6 py-3 bg-green-600 text-white font-medium rounded-lg shadow-md hover:bg-green-700 transition">
+            Lihat Pesanan
+        </button>
+    </div>
+</div>

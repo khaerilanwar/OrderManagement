@@ -15,22 +15,27 @@ import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { HttpErrorResponse } from '@angular/common/http';
+import { environment } from '../../../../environments/environment.development';
+import { SelectModule } from 'primeng/select';
 
 @Component({
   selector: 'app-product',
-  imports: [CommonModule, DataViewModule, SelectButtonModule, FormsModule, TagModule, ButtonModule, DialogModule, InputNumberModule],
+  imports: [CommonModule, DataViewModule, SelectButtonModule, FormsModule, TagModule, ButtonModule, DialogModule, InputNumberModule, SelectModule],
   templateUrl: './product.component.html',
   styleUrl: './product.component.scss',
   providers: [ProductService]
 })
 export class ProductComponent implements OnInit {
   products: any[] = [];
-  resourceUrl: string = 'http://localhost:3000/static/images/';
+  resourceUrl: string = environment.resourceUrl;
   openModal: boolean = false;
   productSelected: any = null;
   quantity: number = 1;
   subTotal: number = 0;
   customer: any = null;
+  clientKey: string = environment.midtransClientKey
+  licenseCustomer: any[] = []
+  licenseSelected: any = null;
   // stateOptions: any[] = [
   //   { label: 'All', value: 'all' },
   //   { label: 'Bot', value: 'bot' },
@@ -49,6 +54,7 @@ export class ProductComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.loadMidtransScript();
     this.getAllProducts();
     if (this.authService.isAuthCustomer()) {
       this.getCustomer();
@@ -66,10 +72,109 @@ export class ProductComponent implements OnInit {
     this.openModal = true;
     this.productSelected = product;
     this.subTotal = this.productSelected.price * this.quantity;
+
+    if (this.productSelected.category.id == 4) {
+      this.spinner.show();
+      this.orderService.getCustomerOrders(this.customer.id).subscribe(
+        (res: any) => {
+          this.spinner.hide();
+          this.licenseCustomer = res.data.license || []
+        },
+        (err: HttpErrorResponse) => {
+          this.spinner.hide();
+          this.messageService.add({ severity: 'error', summary: 'Gagal memuat lisensi', detail: err.error.message || 'Terjadi kesalahan, silakan coba lagi' });
+        }
+      )
+    }
   }
 
   changeSubTotal() {
     this.subTotal = this.quantity * this.productSelected.price;
+  }
+
+  createPaymentToken() {
+    this.openModal = false
+    this.spinner.show();
+    this.orderService.createPaymentToken(
+      this.productSelected.id,
+      this.quantity,
+      this.customer.id
+    ).subscribe(
+      (res: any) => {
+        this.spinner.hide();
+        if (typeof window !== 'undefined' && (window as any).snap) {
+          (window as any).snap.pay(res.token, {
+            onSuccess: (result: any) => {
+              const data = {
+                ...result,
+                productId: this.productSelected.id,
+                customerId: this.customer.id,
+                productCategory: this.productSelected.category.id,
+                licenseId: this.licenseSelected ? this.licenseSelected.id : null
+              }
+
+              this.orderService.onSuccessPayment(data).subscribe(
+                (res: any) => {
+                  this.messageService.add({
+                    severity: 'success',
+                    summary: 'Pembayaran Berhasil',
+                    detail: 'Pesanan Anda telah berhasil dibuat. Silakan cek di menu My Order.',
+                  });
+                  this.router.navigate(['/my-order']);
+                }
+              )
+            },
+            onPending: (result: any) => {
+              const data = {
+                ...result,
+                productId: this.productSelected.id,
+                customerId: this.customer.id,
+                productCategory: this.productSelected.category.id,
+                licenseId: this.licenseSelected ? this.licenseSelected.id : null
+              }
+
+              this.orderService.onPendingPayment(data).subscribe(
+                (res: any) => {
+                  this.messageService.add({
+                    severity: 'info',
+                    summary: 'Pembayaran Tertunda',
+                    detail: 'Mohon melakukan pembayaran melalui metode yang telah dipilih.',
+                  })
+                }
+              )
+            },
+            onError: (result: any) => {
+              console.error('Error:', result);
+            },
+            onClose: () => {
+              this.messageService.add({
+                severity: 'info',
+                summary: 'Batalkan Pembayaran',
+                detail: 'Anda telah membatalkan pembayaran.',
+              })
+            }
+          });
+        } else {
+          console.error('Midtrans Snap.js belum dimuat.');
+        }
+      },
+      (err: HttpErrorResponse) => {
+        this.spinner.hide();
+        this.messageService.add({ severity: 'error', summary: 'Gagal membuat token pembayaran', detail: err.error.message || 'Terjadi kesalahan, silakan coba lagi' });
+      }
+    )
+  }
+
+  loadMidtransScript() {
+    const existingScript = document.getElementById('midtrans-script');
+    if (!existingScript) {
+      const script = document.createElement('script');
+      script.id = 'midtrans-script';
+      script.src = 'https://app.sandbox.midtrans.com/snap/snap.js';
+      script.setAttribute('data-client-key', this.clientKey);
+      script.async = true;
+      document.body.appendChild(script);
+    }
   }
 
   pesanProduk() {

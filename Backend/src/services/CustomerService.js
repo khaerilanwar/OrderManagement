@@ -23,6 +23,7 @@ export const customerRegistration = async (data) => {
                 email: data.email,
                 phone: data.phone,
                 whatsapp: data.whatsapp,
+                balance: 1000000,
                 address: data.address,
                 telegram: data.telegram || '',
                 created_at: new Date(),

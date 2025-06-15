@@ -31,7 +31,7 @@ async function main() {
     printLog("Status seeder completed successfully.");
 
     // Menjalankan seeder untuk order
-    await orderSeeder(50);
+    await orderSeeder(20);
     printLog("Order seeder completed successfully.");
 
     // Menjalankan seeder untuk token license
