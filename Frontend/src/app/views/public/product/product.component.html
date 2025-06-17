@@ -86,7 +86,7 @@
             Jumlah Pesanan
             }
         </label>
-        <p-inputnumber [(ngModel)]="quantity" [showButtons]="true" (ngModelChange)="changeSubTotal()" [min]="1"
+        <p-inputnumber [(ngModel)]="quantity" [showButtons]="true" (ngModelChange)="changeSubTotal()" [min]="1" [max]="['2', '3'].includes(productSelected.category.id) ? 1 : 99"
             buttonLayout="horizontal" inputId="quantity" [inputStyle]=" { width: '3rem' }">
             <ng-template #incrementbuttonicon>
                 <span class="pi pi-plus"></span>

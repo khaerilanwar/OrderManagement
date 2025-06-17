@@ -44,6 +44,7 @@ export const createProduct = async (data) => {
                 name: data.name,
                 description: data.description,
                 image: data.image,
+                price: data.price,
                 category_id: data.categoryId,
                 is_active: true,
             }
@@ -66,6 +67,7 @@ export const editProduct = async (id, data) => {
             where: { id },
             data: {
                 name: data.name,
+                price: data.price,
                 description: data.description,
                 image: data.image === null ? product.image : data.image,
             }

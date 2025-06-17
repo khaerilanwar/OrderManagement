@@ -4,10 +4,10 @@ export const createNewProduct = async (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ message: "Image is required." })
 
-        const { name, description, categoryId } = req.body
+        const { name, description, categoryId, price } = req.body
         const imageName = req.file.filename
         const response = await createProduct({
-            name, description, image: imageName, categoryId: Number(categoryId)
+            name, price: Number(price), description, image: imageName, categoryId: Number(categoryId)
         })
         if (!response.success) return res.status(response.statusCode).json(response)
 
@@ -45,10 +45,10 @@ export const getAllProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
     try {
         const { id } = req.params
-        const { name, description } = req.body
+        const { name, price, description } = req.body
         const imageName = req.file ? req.file.filename : null
 
-        const response = await editProduct(id, { name, description, image: imageName })
+        const response = await editProduct(id, { name, price: Number(price), description, image: imageName })
         if (!response.success) return res.status(response.statusCode).json(response)
 
         return res.status(response.statusCode).json(response)
