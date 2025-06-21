@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { TableModule } from 'primeng/table';
+import { Table, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { DrawerModule } from 'primeng/drawer';
 import { TextareaModule } from 'primeng/textarea';
@@ -14,10 +14,12 @@ import { MessageService } from 'primeng/api';
 import { HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment.development';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 @Component({
   selector: 'app-product-list',
-  imports: [TableModule, InputNumberModule, CommonModule, FileUploadModule, InputTextModule, SelectModule, ButtonModule, TagModule, FormsModule, DrawerModule, TextareaModule],
+  imports: [TableModule, IconFieldModule, InputIconModule, InputNumberModule, CommonModule, FileUploadModule, InputTextModule, SelectModule, ButtonModule, TagModule, FormsModule, DrawerModule, TextareaModule],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss'
 })
@@ -76,6 +78,10 @@ export class ProductListComponent implements OnInit {
         this.categories = res.data;
       }
     )
+  }
+
+  onGlobalFilter(table: Table, event: Event) {
+    table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
   }
 
   saveNewProduct(type: string, fileUploader: FileUpload) {
