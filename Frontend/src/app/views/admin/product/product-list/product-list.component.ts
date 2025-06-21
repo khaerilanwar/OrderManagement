@@ -55,12 +55,14 @@ export class ProductListComponent implements OnInit {
       this.inputName = '';
       this.inputDescription = '';
       this.categorySelected = undefined;
+      this.productPrice = 0
     } else if (type === 'edit' && product) {
       this.drawerHeader = 'Edit Product';
       this.inputName = product.name;
       this.inputDescription = product.description;
       this.categorySelected = this.categories.find(c => c.id === product.category.id);
       this.productSelected = product;
+      this.productPrice = product.price
     }
   }
 
@@ -98,6 +100,7 @@ export class ProductListComponent implements OnInit {
       this.orderService.createNewProduct(
         {
           name: this.inputName,
+          price: this.productPrice,
           description: this.inputDescription,
           categoryId: this.categorySelected.id
         },
@@ -131,6 +134,7 @@ export class ProductListComponent implements OnInit {
           this.productSelected.id,
           {
             name: this.inputName,
+            price: this.productPrice,
             description: this.inputDescription
           },
           fileUploader.files[0] as File

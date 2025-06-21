@@ -86,15 +86,17 @@
             Jumlah Pesanan
             }
         </label>
-        <p-inputnumber [(ngModel)]="quantity" [showButtons]="true" (ngModelChange)="changeSubTotal()" [min]="1"
-            buttonLayout="horizontal" inputId="quantity" [inputStyle]=" { width: '3rem' }">
-            <ng-template #incrementbuttonicon>
-                <span class="pi pi-plus"></span>
-            </ng-template>
-            <ng-template #decrementbuttonicon>
-                <span class="pi pi-minus"></span>
-            </ng-template>
-        </p-inputnumber>
+        @if (productSelected) {
+            <p-inputnumber [(ngModel)]="quantity" [showButtons]="true" (ngModelChange)="changeSubTotal()" [min]="1" [max]="['2', '3'].includes(productSelected.category.id) ? 1 : 99"
+                buttonLayout="horizontal" inputId="quantity" [inputStyle]=" { width: '3rem' }">
+                <ng-template #incrementbuttonicon>
+                    <span class="pi pi-plus"></span>
+                </ng-template>
+                <ng-template #decrementbuttonicon>
+                    <span class="pi pi-minus"></span>
+                </ng-template>
+            </p-inputnumber>
+        }
     </div>
 
     @if (productSelected && productSelected.category.id == 4) {
