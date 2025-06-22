@@ -8,7 +8,7 @@ import customerRoute from "./CustomerRoutes.js"
 import testimoniRoute from "./TestimoniRoutes.js"
 import licenseRoute from "./LicenseRoutes.js"
 import { getAllTestimoni } from "../controllers/TestimoniController.js"
-import { getAllAdminProduct, getAllProduct } from "../controllers/ProductController.js"
+import { getAllAdminProduct, getAllProduct, getProductCategoriesCustomer } from "../controllers/ProductController.js"
 import productRoute from "./ProductRoutes.js"
 import { prisma } from "../config/Database.js"
 import { testDokuSandbox } from "../controllers/PaymentController.js"
@@ -139,9 +139,10 @@ router.get("/cek-payment", testDokuSandbox)
 // Utility routes
 router.use("/auth", authRoute)
 router.get("/testimoni", getAllTestimoni)
+router.get("/product/product-category", getProductCategoriesCustomer)
 router.get("/product", getAllProduct)
 router.get("/productadmin", verifyToken, getAllAdminProduct)
-router.use("/product", verifyToken, productRoute) // Assuming you want to protect product routes as well
+router.use("/product", verifyToken, productRoute)
 router.use("/category", verifyToken, categoryRoute)
 router.use('/order', verifyToken, orderRoute)
 router.use("/status", verifyToken, statusRoute)

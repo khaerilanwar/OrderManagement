@@ -10,28 +10,24 @@ async function productSeeder(length = 9) {
 
         const categories = [
             {
-                id: 1,
                 name: 'Desain',
                 description: 'Desain grafis dan multimedia',
                 created_at: new Date(),
                 updated_at: new Date(),
             },
             {
-                id: 2,
                 name: 'Game',
                 description: 'Akun game seru untuk dimainkan',
                 created_at: new Date(),
                 updated_at: new Date(),
             },
             {
-                id: 3,
                 name: 'Software',
                 description: 'Software untuk produktivitas',
                 created_at: new Date(),
                 updated_at: new Date(),
             },
             {
-                id: 4,
                 name: 'License',
                 description: 'Lisensi Perangkat Lunak',
                 created_at: new Date(),

@@ -114,19 +114,21 @@ model Testimoni {
 }
 
 model Product {
-  id          String          @id @default(cuid())
-  name        String
-  description String?
-  price       Int
-  image       String?
-  video       String?
-  category_id Int
-  order_id    String?
-  order       Order[]
-  category    ProductCategory @relation(fields: [category_id], references: [id], onDelete: Cascade)
-  is_active   Boolean         @default(false)
-  created_at  DateTime        @default(now())
-  updated_at  DateTime        @updatedAt
+  id              String          @id @default(cuid())
+  name            String
+  description     String?
+  price           Int
+  image           String?
+  cloud_public_id String?
+  video           String?
+  category_id     Int
+  order_id        String?
+  order           Order[]
+  category        ProductCategory @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  is_active       Boolean         @default(false)
+  is_deleted      Boolean         @default(false)
+  created_at      DateTime        @default(now())
+  updated_at      DateTime        @updatedAt
 }
 
 model ProductCategory {

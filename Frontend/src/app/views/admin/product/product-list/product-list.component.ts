@@ -10,18 +10,22 @@ import { InputTextModule } from 'primeng/inputtext';
 import { FileUpload, FileUploadModule } from 'primeng/fileupload';
 import { CommonModule } from '@angular/common';
 import { OrderService } from '../../../../services/admin/order.service';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment.development';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
+import { ImageModule } from 'primeng/image';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @Component({
   selector: 'app-product-list',
-  imports: [TableModule, IconFieldModule, InputIconModule, InputNumberModule, CommonModule, FileUploadModule, InputTextModule, SelectModule, ButtonModule, TagModule, FormsModule, DrawerModule, TextareaModule],
+  imports: [TableModule, ConfirmDialogModule, IconFieldModule, InputIconModule, InputNumberModule, CommonModule, FileUploadModule, InputTextModule, SelectModule, ButtonModule, TagModule, FormsModule, DrawerModule, TextareaModule, ImageModule],
   templateUrl: './product-list.component.html',
-  styleUrl: './product-list.component.scss'
+  styleUrl: './product-list.component.scss',
+  providers: [ConfirmationService]
 })
 export class ProductListComponent implements OnInit {
   resourceUrl: string = environment.resourceUrl;
@@ -37,10 +41,13 @@ export class ProductListComponent implements OnInit {
   inputDescription: string = '';
   productPrice: number = 0;
   categorySelected!: any
+  previewImage: string = '';
 
   constructor(
     private orderService: OrderService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private spinner: NgxSpinnerService,
+    private confirmationService: ConfirmationService
   ) { }
 
   ngOnInit(): void {
@@ -63,12 +70,15 @@ export class ProductListComponent implements OnInit {
       this.categorySelected = this.categories.find(c => c.id === product.category.id);
       this.productSelected = product;
       this.productPrice = product.price
+      this.previewImage = product.image;
     }
   }
 
   getAllProducts() {
+    this.spinner.show();
     this.orderService.getAllProducts().subscribe(
       (res: any) => {
+        this.spinner.hide();
         this.products = res.data;
       }
     )
@@ -78,6 +88,29 @@ export class ProductListComponent implements OnInit {
     this.orderService.getAllProductCategories().subscribe(
       (res: any) => {
         this.categories = res.data;
+      }
+    )
+  }
+
+  deleteProduct(productId: string) {
+    this.spinner.show();
+    this.orderService.deleteProduct(productId).subscribe(
+      (res: any) => {
+        this.spinner.hide();
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Product deleted successfully.'
+        });
+        this.getAllProducts();
+      },
+      (err: HttpErrorResponse) => {
+        this.spinner.hide();
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: err.error.message || 'An error occurred while deleting the product.'
+        });
       }
     )
   }
@@ -97,6 +130,7 @@ export class ProductListComponent implements OnInit {
         return
       }
 
+      this.spinner.show();
       this.orderService.createNewProduct(
         {
           name: this.inputName,
@@ -118,8 +152,10 @@ export class ProductListComponent implements OnInit {
           this.inputName = '';
           this.inputDescription = '';
           this.categorySelected = undefined;
+          this.spinner.hide();
         },
         (err: HttpErrorResponse) => {
+          this.spinner.hide();
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
@@ -129,6 +165,7 @@ export class ProductListComponent implements OnInit {
       )
     }
     else if (type === 'edit') {
+      this.spinner.show();
       if (fileUploader.files.length > 0) {
         this.orderService.updateProduct(
           this.productSelected.id,
@@ -151,8 +188,10 @@ export class ProductListComponent implements OnInit {
             this.inputName = '';
             this.inputDescription = '';
             this.categorySelected = undefined;
+            this.spinner.hide();
           },
           (err: HttpErrorResponse) => {
+            this.spinner.hide();
             this.messageService.add({
               severity: 'error',
               summary: 'Error',
@@ -165,6 +204,7 @@ export class ProductListComponent implements OnInit {
           this.productSelected.id,
           {
             name: this.inputName,
+            price: this.productPrice,
             description: this.inputDescription
           }
         ).subscribe(
@@ -180,8 +220,10 @@ export class ProductListComponent implements OnInit {
             this.inputName = '';
             this.inputDescription = '';
             this.categorySelected = undefined;
+            this.spinner.hide();
           },
           (err: HttpErrorResponse) => {
+            this.spinner.hide();
             this.messageService.add({
               severity: 'error',
               summary: 'Error',
@@ -214,6 +256,29 @@ export class ProductListComponent implements OnInit {
         });
       }
     )
+  }
+
+  onConfirmDelete(event: Event, item: any) {
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      closeOnEscape: true,
+      dismissableMask: true,
+      header: 'Delete Confirmation',
+      message: `Do you want to delete <span class="font-semibold">${item.name}</span> ?`,
+      icon: 'pi pi-info-circle',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'secondary'
+      },
+      acceptButtonProps: {
+        label: 'Delete',
+        severity: 'danger'
+      },
+
+      accept: () => {
+        this.deleteProduct(item.id)
+      }
+    });
   }
 
   limitString(value: string, limit: number): string {

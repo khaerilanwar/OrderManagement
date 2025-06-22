@@ -12,7 +12,7 @@ export class AuthService {
     constructor(
         private http: HttpClient,
         private router: Router
-    ) {}
+    ) { }
 
     authenticate(username: string, password: string) {
         return this.http.post('/auth/login', { username, password });
@@ -49,7 +49,9 @@ export class AuthService {
 
     isAuthCustomer() {
         const customerToken = localStorage.getItem('token');
-        if (!customerToken) return false;
+        const decodedToken: any = jwtDecode(customerToken || '');
+        const customerId = decodedToken?.customerId;
+        if (!customerToken || !customerId) return false;
 
         return true;
     }

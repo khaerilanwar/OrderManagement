@@ -60,4 +60,8 @@ export class OrderService {
       data
     );
   }
+
+  getAllProductCategoryPublic() {
+    return this.http.get('/product/product-category');
+  }
 }

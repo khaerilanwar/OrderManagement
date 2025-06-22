@@ -156,8 +156,10 @@ export class ProductCategoryComponent implements OnInit {
   }
 
   getAllProductCategories() {
+    this.spinner.show();
     this.orderService.getAllProductCategories().subscribe(
       (res: any) => {
+        this.spinner.hide();
         this.productCategories = res.data;
       }
     )

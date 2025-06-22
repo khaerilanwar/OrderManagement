@@ -41,6 +41,7 @@ export class OrderService {
         formData.append('name', data.name);
         formData.append('description', data.description);
         formData.append('categoryId', data.categoryId);
+        formData.append('price', data.price);
         formData.append('image', file as Blob);
 
         return this.http.post('/product', formData)
@@ -51,6 +52,7 @@ export class OrderService {
 
         formData.append('name', data.name);
         formData.append('description', data.description);
+        formData.append('price', data.price)
         if (file !== null) {
             formData.append('image', file as Blob);
         }
@@ -76,6 +78,10 @@ export class OrderService {
 
     createProductCategory(data: any) {
         return this.http.post('/product/category', data);
+    }
+
+    deleteProduct(id: string) {
+        return this.http.delete(`/product/${id}`);
     }
 
     updateProductCategory(id: string, data: any) {

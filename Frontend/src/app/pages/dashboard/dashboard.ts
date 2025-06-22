@@ -3,6 +3,7 @@ import { StatsWidget } from './components/statswidget';
 import { RecentSalesWidget } from './components/recentsaleswidget';
 import { BestSellingWidget } from './components/bestsellingwidget';
 import { OrderService } from '../../services/admin/order.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
     selector: 'app-dashboard',
@@ -25,7 +26,8 @@ export class Dashboard implements OnInit {
     bestSellingData: any;
 
     constructor(
-        private orderService: OrderService
+        private orderService: OrderService,
+        private spinner: NgxSpinnerService
     ) { }
 
     ngOnInit(): void {
@@ -33,8 +35,10 @@ export class Dashboard implements OnInit {
     }
 
     getAllDataDashboard() {
+        this.spinner.show();
         this.orderService.getDataDashboard().subscribe(
             (res: any) => {
+                this.spinner.hide();
                 const result = res.data
                 this.statsData = {
                     totalOrders: result.totalOrders,

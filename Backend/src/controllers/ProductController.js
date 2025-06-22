@@ -1,13 +1,14 @@
-import { changeProductStatus, createCategoryProduct, createProduct, editProduct, editProductCategory, getAdminProducts, getProductCategories, getProducts, removeProductCategory } from "../services/ProductService.js"
+import { changeProductStatus, createCategoryProduct, createProduct, editProduct, editProductCategory, getAdminProducts, getProductCategories, getProducts, productCategoriesCustomer, removeProduct, removeProductCategory } from "../services/ProductService.js"
 
 export const createNewProduct = async (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ message: "Image is required." })
 
         const { name, description, categoryId, price } = req.body
-        const imageName = req.file.filename
+        const cloudAssetPath = req.file.path
+        const cloudPublicId = req.file.filename
         const response = await createProduct({
-            name, price: Number(price), description, image: imageName, categoryId: Number(categoryId)
+            name, price: Number(price), description, image: cloudAssetPath, cloudPublicId, categoryId: Number(categoryId)
         })
         if (!response.success) return res.status(response.statusCode).json(response)
 
@@ -46,9 +47,23 @@ export const updateProduct = async (req, res) => {
     try {
         const { id } = req.params
         const { name, price, description } = req.body
-        const imageName = req.file ? req.file.filename : null
+        const cloudAssetPath = req.file ? req.file.path : null
+        const cloudPublicId = req.file ? req.file.filename : null
 
-        const response = await editProduct(id, { name, price: Number(price), description, image: imageName })
+        const response = await editProduct(id, { name, price: Number(price), description, image: cloudAssetPath, cloudPublicId })
+        if (!response.success) return res.status(response.statusCode).json(response)
+
+        return res.status(response.statusCode).json(response)
+    }
+    catch (err) {
+        return res.status(500).json({ message: err.message || "Internal server error." })
+    }
+}
+
+export const deleteProduct = async (req, res) => {
+    try {
+        const { id } = req.params
+        const response = await removeProduct(id)
         if (!response.success) return res.status(response.statusCode).json(response)
 
         return res.status(response.statusCode).json(response)
@@ -118,6 +133,18 @@ export const deleteProductCategory = async (req, res) => {
         const { id } = req.params
 
         const response = await removeProductCategory(Number(id))
+        if (!response.success) return res.status(response.statusCode).json(response)
+
+        return res.status(response.statusCode).json(response)
+    }
+    catch (err) {
+        return res.status(500).json({ message: err.message || "Internal server error." })
+    }
+}
+
+export const getProductCategoriesCustomer = async (req, res) => {
+    try {
+        const response = await productCategoriesCustomer()
         if (!response.success) return res.status(response.statusCode).json(response)
 
         return res.status(response.statusCode).json(response)

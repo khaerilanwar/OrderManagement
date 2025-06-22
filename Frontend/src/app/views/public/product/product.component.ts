@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, computed, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DataViewModule } from 'primeng/dataview';
@@ -27,6 +27,7 @@ import { SelectModule } from 'primeng/select';
 })
 export class ProductComponent implements OnInit {
   products: any[] = [];
+  signalProducts = signal<any[]>([]);
   resourceUrl: string = environment.resourceUrl;
   openModal: boolean = false;
   productSelected: any = null;
@@ -37,6 +38,14 @@ export class ProductComponent implements OnInit {
   openDetail: boolean = false
   licenseCustomer: any[] = []
   licenseSelected: any = null;
+  stateOptions: any[] = []
+  selectedCategory = signal<Number>(0)
+  filteredProducts = computed(() =>
+    this.selectedCategory() === 0 ? this.signalProducts() :
+      this.signalProducts().filter(
+        (p) => p.category_id === this.selectedCategory()
+      )
+  )
 
   constructor(
     private orderService: OrderService,
@@ -53,6 +62,10 @@ export class ProductComponent implements OnInit {
     if (this.authService.isAuthCustomer()) {
       this.getCustomer();
     }
+  }
+
+  setFilteredProducts(category: Number) {
+    this.selectedCategory.set(category);
   }
 
   onOpenDetail(item: any) {
@@ -207,9 +220,18 @@ export class ProductComponent implements OnInit {
   }
 
   getAllProducts() {
+    this.spinner.show();
     this.orderService.getAllProducts().subscribe(
       (res: any) => {
+        this.spinner.hide();
         this.products = res.data
+        this.signalProducts.set(this.products);
+
+        this.stateOptions = res.categories.map((category: any) => ({
+          label: category.name,
+          value: category.id
+        }));
+        this.stateOptions.unshift({ label: 'Semua', value: 0 });
       }
     )
   }

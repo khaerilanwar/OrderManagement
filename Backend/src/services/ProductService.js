@@ -1,15 +1,37 @@
-import { fileURLToPath } from "url"
 import { prisma } from "../config/Database.js"
-import path from "path"
+import cloudinary from "../config/Config.js"
 
 export const getProducts = async () => {
     try {
         const data = await prisma.product.findMany({
             where: {
-                is_active: true
+                is_active: true,
+                is_deleted: false
             },
             include: {
                 category: true
+            },
+            orderBy: [{ created_at: "desc" }, { name: "asc" }],
+        })
+
+        const categories = await prisma.productCategory.findMany({})
+
+        return { success: true, statusCode: 200, message: "Products retrieved successfully.", data, categories }
+    }
+    catch (error) {
+        return { success: false, statusCode: 500, message: error.message || "Internal server error." }
+    }
+}
+
+export const getAdminProducts = async () => {
+    try {
+        const data = await prisma.product.findMany({
+            where: {
+                is_deleted: false
+            },
+            include: {
+                category: true,
+                order: true
             },
             orderBy: [{ created_at: "desc" }, { name: "asc" }],
         })
@@ -21,16 +43,21 @@ export const getProducts = async () => {
     }
 }
 
-export const getAdminProducts = async () => {
+export const removeProduct = async (id) => {
     try {
-        const data = await prisma.product.findMany({
-            include: {
-                category: true
-            },
-            orderBy: [{ created_at: "desc" }, { name: "asc" }],
+        const product = await prisma.product.findUnique({
+            where: { id },
+            include: { order: true }
         })
+        if (!product) return { success: false, statusCode: 404, message: "Product not found." }
+        if (product.order.length > 0) return { success: false, statusCode: 400, message: "Cannot delete product with associated orders." }
+        await prisma.product.delete({ where: { id } })
 
-        return { success: true, statusCode: 200, message: "Products retrieved successfully.", data }
+        // hapus file dari cloudinary jika ada
+        if (product.cloud_public_id) {
+            await cloudinary.uploader.destroy(product.cloud_public_id)
+        }
+        return { success: true, statusCode: 200, message: "Product deleted successfully." }
     }
     catch (error) {
         return { success: false, statusCode: 500, message: error.message || "Internal server error." }
@@ -45,6 +72,7 @@ export const createProduct = async (data) => {
                 description: data.description,
                 image: data.image,
                 price: data.price,
+                cloud_public_id: data.cloudPublicId,
                 category_id: data.categoryId,
                 is_active: true,
             }
@@ -70,23 +98,12 @@ export const editProduct = async (id, data) => {
                 price: data.price,
                 description: data.description,
                 image: data.image === null ? product.image : data.image,
+                cloud_public_id: data.cloudPublicId === null ? product.cloud_public_id : data.cloudPublicId,
             }
         })
 
         // hapus file lama jika ada
-        const __filename = fileURLToPath(import.meta.url);
-        const __dirname = path.dirname(__filename);
-        const oldFilePath = path.join(__dirname, '../public/images', product.image);
-        if (data.image && product.image && oldFilePath !== path.join(__dirname, '../public/images', data.image)) {
-            try {
-                const fs = await import('fs');
-                if (fs.existsSync(oldFilePath)) {
-                    fs.unlinkSync(oldFilePath);
-                }
-            } catch (err) {
-                console.error("Error deleting old image file:", err);
-            }
-        }
+        await cloudinary.uploader.destroy(product.cloud_public_id)
 
         return { success: true, statusCode: 200, message: "Product updated successfully." }
     }
@@ -177,6 +194,18 @@ export const editProductCategory = async (id, data) => {
         })
 
         return { success: true, statusCode: 200, message: "Product category updated successfully." }
+    }
+    catch (error) {
+        return { success: false, statusCode: 500, message: error.message || "Internal server error." }
+    }
+}
+
+export const productCategoriesCustomer = async () => {
+    try {
+        const data = await prisma.productCategory.findMany({})
+
+        if (data.length === 0) return { success: false, statusCode: 404, message: "No product categories found." }
+        return { success: true, statusCode: 200, message: "Product categories retrieved successfully.", data }
     }
     catch (error) {
         return { success: false, statusCode: 500, message: error.message || "Internal server error." }

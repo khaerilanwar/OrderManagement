@@ -7,6 +7,7 @@ import { PanelModule } from 'primeng/panel';
 import { RatingModule } from 'primeng/rating';
 import { OrderService } from '../../../services/public/order.service';
 import { DatePipe } from '@angular/common';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-testimoni',
@@ -20,7 +21,8 @@ export class TestimoniComponent implements OnInit {
   rating: number = 5;
 
   constructor(
-    private orderService: OrderService
+    private orderService: OrderService,
+    private spinner: NgxSpinnerService
   ) { }
 
   ngOnInit(): void {
@@ -28,8 +30,10 @@ export class TestimoniComponent implements OnInit {
   }
 
   getAllTestimoni() {
+    this.spinner.show();
     this.orderService.getAllTestimoniOrders().subscribe(
       (res: any) => {
+        this.spinner.hide();
         this.testimoni = res.data;
       }
     )
