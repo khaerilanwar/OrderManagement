@@ -85,19 +85,19 @@ export class ProductComponent implements OnInit {
     this.productSelected = product;
     this.subTotal = this.productSelected.price * this.quantity;
 
-    if (this.productSelected.category.id == 4) {
-      this.spinner.show();
-      this.orderService.getCustomerOrders(this.customer.id).subscribe(
-        (res: any) => {
-          this.spinner.hide();
-          this.licenseCustomer = res.data.license || []
-        },
-        (err: HttpErrorResponse) => {
-          this.spinner.hide();
-          this.messageService.add({ severity: 'error', summary: 'Gagal memuat lisensi', detail: err.error.message || 'Terjadi kesalahan, silakan coba lagi' });
-        }
-      )
-    }
+    // if (this.productSelected.category.id == 4) {
+    //   this.spinner.show();
+    //   this.orderService.getCustomerOrders(this.customer.id).subscribe(
+    //     (res: any) => {
+    //       this.spinner.hide();
+    //       this.licenseCustomer = res.data.license || []
+    //     },
+    //     (err: HttpErrorResponse) => {
+    //       this.spinner.hide();
+    //       this.messageService.add({ severity: 'error', summary: 'Gagal memuat lisensi', detail: err.error.message || 'Terjadi kesalahan, silakan coba lagi' });
+    //     }
+    //   )
+    // }
   }
 
   changeSubTotal() {

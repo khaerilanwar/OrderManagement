@@ -75,11 +75,11 @@ export class AppMenu {
                         icon: 'pi pi-fw pi-users',
                         routerLink: ['/admin/customer']
                     },
-                    {
-                        label: 'Lisensi',
-                        icon: 'pi pi-fw pi-qrcode',
-                        routerLink: ['/admin/customer/license']
-                    },
+                    // {
+                    //     label: 'Lisensi',
+                    //     icon: 'pi pi-fw pi-qrcode',
+                    //     routerLink: ['/admin/customer/license']
+                    // },
                     {
                         label: 'Chatting',
                         icon: 'pi pi-fw pi-comments',

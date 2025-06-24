@@ -49,7 +49,7 @@ export class AuthService {
 
     isAuthCustomer() {
         const customerToken = localStorage.getItem('token');
-        const decodedToken: any = jwtDecode(customerToken || '');
+        const decodedToken: any = customerToken ? jwtDecode(customerToken || '') : '';
         const customerId = decodedToken?.customerId;
         if (!customerToken || !customerId) return false;
 

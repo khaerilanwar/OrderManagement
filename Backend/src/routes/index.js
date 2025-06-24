@@ -77,11 +77,14 @@ router.get("/dashboard", verifyToken, async (req, res) => {
             take: 5,
             include: {
                 customer: true,
-                category: true
+                category: true,
+                product: {
+                    include: { category: true }
+                }
             }
         })
         const groupSellingOrder = await prisma.order.groupBy({
-            by: ['category_id'],
+            by: ['product_id'],
             _count: {
                 id: true
             },
@@ -94,12 +97,12 @@ router.get("/dashboard", verifyToken, async (req, res) => {
         })
         const bestSellingOrder = await Promise.all(
             groupSellingOrder.map(async (group) => {
-                const category = await prisma.category.findUnique({
+                const category = await prisma.product.findUnique({
                     where: {
-                        id: group.category_id
+                        id: group.product_id
                     },
                     include: {
-                        product_category: true
+                        category: true
                     }
                 })
 

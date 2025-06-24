@@ -24,7 +24,7 @@ import { Router } from '@angular/router';
             <ng-template #body let-order>
                 <tr>
                     <td style="width: 35%; min-width: 7rem;">{{ order.title }}</td>
-                    <td style="width: 35%; min-width: 8rem;">{{ order.category.name }}</td>
+                    <td style="width: 35%; min-width: 8rem;">{{ order.product.category.name }}</td>
                     <td style="width: 15%;">
                         <button (click)="viewDetail(order.id)" pButton pRipple type="button" icon="pi pi-search" class="p-button p-component p-button-text p-button-icon-only"></button>
                     </td>

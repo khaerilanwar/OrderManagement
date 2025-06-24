@@ -165,6 +165,12 @@ export class ProductCategoryComponent implements OnInit {
     )
   }
 
+  limitString(value: string, limit: number): string {
+    if (!value) return '';
+    if (value.length <= limit) return value;
+    return value.substring(0, limit) + '...';
+  }
+
   deleteProductCategory(id: string) {
     this.spinner.show();
     this.orderService.deleteProductCategory(id).subscribe(

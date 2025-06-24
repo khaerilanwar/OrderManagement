@@ -68,8 +68,7 @@
     @if (productSelected) {
     <div class="flex gap-8 mb-4 p-4 shadow-lg bg-slate-50">
         <div>
-            <img class="rounded max-w-32" [src]="`${resourceUrl}${productSelected.image}`"
-                [alt]="productSelected.name" />
+            <img class="rounded max-w-32" [src]="productSelected.image" [alt]="productSelected.name" />
         </div>
         <div>
             <p class="m-0"> {{ productSelected.category.name }} </p>
@@ -81,11 +80,7 @@
 
     <div class="mt-6 flex justify-between items-center shadow-lg bg-slate-50 p-3">
         <label class="text-lg" for="quantity">
-            @if (productSelected && productSelected.category.id == 4) {
-            Jumlah Mingguan
-            } @else {
-            Jumlah Pesanan
-            }
+            Jumlah Pesan
         </label>
         @if (productSelected) {
         <p-inputnumber [(ngModel)]="quantity" [showButtons]="true" (ngModelChange)="changeSubTotal()" [min]="1"
@@ -101,12 +96,12 @@
         }
     </div>
 
-    @if (productSelected && productSelected.category.id == 4) {
+    <!-- @if (productSelected && productSelected.category.id == 4) {
     <div class="mt-6 flex justify-between items-center shadow-lg bg-slate-50 p-3">
         <p-select [options]="licenseCustomer" [(ngModel)]="licenseSelected" optionLabel="name"
             placeholder="Select update license" class="w-full" />
     </div>
-    }
+    } -->
 
     <div class="mt-6 flex justify-between items-center shadow-lg bg-slate-50 p-3">
         <p class="text-lg my-auto">Subtotal</p>

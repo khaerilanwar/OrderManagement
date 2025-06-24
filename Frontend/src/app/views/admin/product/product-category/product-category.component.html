@@ -43,7 +43,7 @@
                     {{ category.name }}
                 </td>
                 <td>
-                    {{ category.description }}
+                    {{ limitString(category.description, 80) }}
                 </td>
                 <td>
                     {{ category.products.length }}
