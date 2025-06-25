@@ -1,4 +1,4 @@
-import { changeProductStatus, createCategoryProduct, createProduct, editProduct, editProductCategory, getAdminProducts, getProductCategories, getProducts, productCategoriesCustomer, removeProduct, removeProductCategory } from "../services/ProductService.js"
+import { changeProductStatus, createCategoryProduct, createProduct, editProduct, editProductCategory, getAdminProducts, getProductCategories, getProducts, productCategoriesCustomer, removeProduct, removeProductCategory, softRemoveProduct } from "../services/ProductService.js"
 
 export const createNewProduct = async (req, res) => {
     try {
@@ -51,6 +51,19 @@ export const updateProduct = async (req, res) => {
         const cloudPublicId = req.file ? req.file.filename : null
 
         const response = await editProduct(id, { name, price: Number(price), description, image: cloudAssetPath, cloudPublicId })
+        if (!response.success) return res.status(response.statusCode).json(response)
+
+        return res.status(response.statusCode).json(response)
+    }
+    catch (err) {
+        return res.status(500).json({ message: err.message || "Internal server error." })
+    }
+}
+
+export const softDeleteProduct = async (req, res) => {
+    try {
+        const { id } = req.params
+        const response = await softRemoveProduct(id)
         if (!response.success) return res.status(response.statusCode).json(response)
 
         return res.status(response.statusCode).json(response)

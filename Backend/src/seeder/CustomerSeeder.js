@@ -36,7 +36,7 @@ async function customerSeeder(length = 30) {
             updated_at: new Date(),
         }));
 
-        await prisma.customer.createMany({ data: customers });
+        // await prisma.customer.createMany({ data: customers });
         printLog(`Created ${length} new customers.`);
     }
     catch (error) {

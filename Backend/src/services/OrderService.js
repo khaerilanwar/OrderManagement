@@ -149,7 +149,7 @@ export const customerListOrders = async (customerId) => {
     try {
         const data = await prisma.order.findMany({
             where: { customer_id: customerId },
-            orderBy: [{ id: "desc" }, { created_at: "desc" }, { title: "asc" }],
+            orderBy: [{ created_at: "desc" }, { title: "asc" }],
             include: {
                 category: true,
                 status: true,

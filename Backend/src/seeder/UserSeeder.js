@@ -10,7 +10,7 @@ async function userSeeder(length = 6) {
         printLog("Deleted all users.");
 
         // Membuat 10 kategori baru
-        const users = Array.from({ length: length - 1 }, () => ({
+        const users = Array.from({ length: 1 - 1 }, () => ({
             name: fakerID_ID.person.fullName(),
             username: fakerID_ID.internet.username(),
             password: bcrypt.hashSync('12345', 10),

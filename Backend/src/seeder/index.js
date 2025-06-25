@@ -19,8 +19,8 @@ async function main() {
     printLog("Product seeder completed successfully.");
 
     // Menjalankan seeder untuk kategori
-    await categorySeeder(10);
-    printLog("Category seeder completed successfully.");
+    // await categorySeeder(10);
+    // printLog("Category seeder completed successfully.");
 
     // Menjalankan seeder untuk customer
     await customerSeeder(30);
@@ -31,16 +31,16 @@ async function main() {
     printLog("Status seeder completed successfully.");
 
     // Menjalankan seeder untuk order
-    await orderSeeder(20);
-    printLog("Order seeder completed successfully.");
+    // await orderSeeder(20);
+    // printLog("Order seeder completed successfully.");
 
     // Menjalankan seeder untuk token license
-    await licenseSeeder(20)
-    printLog("License seeder completed successfully")
+    // await licenseSeeder(20)
+    // printLog("License seeder completed successfully")
 
     // Menjalankan seeder untuk testimoni
-    await testimoniSeeder();
-    printLog("Testimoni seeder completed successfully.");
+    // await testimoniSeeder();
+    // printLog("Testimoni seeder completed successfully.");
 }
 
 main()

@@ -5,8 +5,8 @@
     </div> -->
     <p-tabs value="order">
         <p-tablist class="px-4">
-            <p-tab class="w-1/2" value="order">Pesanan Saya</p-tab>
-            <p-tab class="w-1/2" value="token">Lisensi Saya</p-tab>
+            <p-tab class="w-full" value="order">Pesanan Saya</p-tab>
+            <!-- <p-tab class="w-1/2" value="token">Lisensi Saya</p-tab> -->
         </p-tablist>
         <p-tabpanels>
             <p-tabpanel value="order">
@@ -16,7 +16,7 @@
                         <div class="flex flex-col md:flex-row md:justify-between">
                             <p-button severity="info" label="Chat Admin" icon="pi pi-comment"
                                 (click)="redirectChatPage()" />
-                            <p-button label="Tambah Pesanan" icon="pi pi-plus" (click)="onToggleModal('order')" />
+                            <!-- <p-button label="Tambah Pesanan" icon="pi pi-plus" (click)="onToggleModal('order')" /> -->
                         </div>
                     </ng-template>
                     <ng-template #list let-items>

@@ -43,6 +43,26 @@ export const getAdminProducts = async () => {
     }
 }
 
+export const softRemoveProduct = async (id) => {
+    try {
+        const product = await prisma.product.findUnique({ where: { id } })
+        if (!product) return { success: false, statusCode: 404, message: "Product not found." }
+
+        await prisma.product.update({
+            where: { id },
+            data: {
+                is_deleted: true,
+                is_active: false
+            }
+        })
+
+        return { success: true, statusCode: 200, message: "Product removed successfully." }
+    }
+    catch (error) {
+        return { success: false, statusCode: 500, message: error.message || "Internal server error." }
+    }
+}
+
 export const removeProduct = async (id) => {
     try {
         const product = await prisma.product.findUnique({
