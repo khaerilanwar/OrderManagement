@@ -126,8 +126,7 @@ export const successPayment = async (req, res) => {
     try {
         const { order_id, gross_amount, transaction_time, productId, customerId, productCategory, licenseId } = req.body;
 
-        const statusOrder = [2, 4].includes(Number(productCategory)) ? 5 : 4;
-        const finishedStatus = await prisma.status.findUnique({ where: { id: statusOrder } })
+        const finishedStatus = await prisma.status.findUnique({ where: { id: 4 } })
         const productSelected = await prisma.product.findUnique({ where: { id: productId } })
 
         await prisma.order.create({
@@ -137,7 +136,6 @@ export const successPayment = async (req, res) => {
                 description: productSelected.description,
                 down_payment: Number(gross_amount),
                 invoice: Number(gross_amount),
-                completed_at: transaction_time ? new Date(transaction_time) : new Date(),
                 customer_id: customerId,
                 adjusted: true,
                 status_id: finishedStatus.id,
@@ -148,59 +146,20 @@ export const successPayment = async (req, res) => {
             }
         })
 
-        // langsung selesai
-        // if ((productCategory == 4 && licenseId) || productCategory == 2) {
-        //     const timelineData = [1, 2, 4, 5]
-        //     timelineData.forEach(async (item, idx) => {
-        //         let status = await prisma.status.findUnique({ where: { id: item } })
-        //         await prisma.timelineStatus.create({
-        //             data: {
-        //                 sequence: idx + 1,
-        //                 description: status.description,
-        //                 status_id: status.id,
-        //                 order_id: order_id,
-        //                 created_at: new Date(),
-        //                 updated_at: new Date()
-        //             }
-        //         })
-        //     })
-
-        //     // license
-        //     if (productCategory == 4) {
-        //         const quantity = Number(gross_amount) / productSelected.price
-        //         const addDays = quantity * 7
-        //         const licenseSelected = await prisma.license.findUnique({ where: { id: licenseId } })
-        //         const curDate = new Date(licenseSelected.expire_date)
-        //         const newExpireDate = curDate > new Date() ? curDate : new Date()
-        //         newExpireDate.setDate(newExpireDate.getDate() + addDays)
-
-        //         await prisma.license.update({
-        //             where: {
-        //                 id: licenseId
-        //             },
-        //             data: {
-        //                 expire_date: newExpireDate
-        //             }
-        //         })
-        //     }
-        // }
-        // diproses admin
-        // else {
-        //     const timelineData = [1, 2, 4]
-        //     timelineData.forEach(async (item, idx) => {
-        //         let status = await prisma.status.findUnique({ where: { id: item } })
-        //         await prisma.timelineStatus.create({
-        //             data: {
-        //                 sequence: idx + 1,
-        //                 description: status.description,
-        //                 status_id: status.id,
-        //                 order_id: order_id,
-        //                 created_at: new Date(),
-        //                 updated_at: new Date()
-        //             }
-        //         })
-        //     })
-        // }
+        const timelineData = [1, 2, 4]
+        timelineData.forEach(async (item, idx) => {
+            let status = await prisma.status.findUnique({ where: { id: item } })
+            await prisma.timelineStatus.create({
+                data: {
+                    sequence: idx + 1,
+                    description: status.description,
+                    status_id: status.id,
+                    order_id: order_id,
+                    created_at: new Date(),
+                    updated_at: new Date()
+                }
+            })
+        })
 
         return res.status(200).json({ success: true, statusCode: 200, message: "Payment order success" })
     }
