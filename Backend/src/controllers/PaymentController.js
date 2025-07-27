@@ -142,7 +142,6 @@ export const successPayment = async (req, res) => {
                 description: productSelected.description,
                 down_payment: Number(gross_amount),
                 invoice: Number(gross_amount),
-                completed_at: transaction_time ? new Date(transaction_time) : new Date(),
                 customer_id: customerId,
                 adjusted: true,
                 payment_type: payment_type,
