@@ -4,3 +4,4 @@ prisma/migrations/
 node_modules/
 ngrok.exe
 ngrok-v3-stable-windows-amd64.zip
+# .vercel

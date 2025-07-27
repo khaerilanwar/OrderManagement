@@ -79,7 +79,10 @@ export const cancelPayment = async (req, res) => {
 
 export const pendingPayment = async (req, res) => {
     try {
-        const { order_id, gross_amount, productId, customerId } = req.body;
+        const { order_id, gross_amount, payment_type, productId, customerId } = req.body;
+        const paymentData =
+            payment_type === 'bank_transfer' ? JSON.stringify(req.body.va_numbers) :
+                payment_type === 'qris' ? req.body.qris_url : ''
 
         const pendingStatus = await prisma.status.findUnique({ where: { id: 2 } })
         const productSelected = await prisma.product.findUnique({ where: { id: productId } })
@@ -92,6 +95,8 @@ export const pendingPayment = async (req, res) => {
                 down_payment: 0,
                 invoice: Number(gross_amount),
                 customer_id: customerId,
+                payment_type: payment_type,
+                payment_data: paymentData,
                 status_id: pendingStatus.id,
                 category_id: '1',
                 product_id: productSelected.id,
@@ -124,10 +129,10 @@ export const pendingPayment = async (req, res) => {
 
 export const successPayment = async (req, res) => {
     try {
-        const { order_id, gross_amount, transaction_time, productId, customerId, productCategory, licenseId } = req.body;
-
-        const statusOrder = [2, 4].includes(Number(productCategory)) ? 5 : 4;
-        const finishedStatus = await prisma.status.findUnique({ where: { id: statusOrder } })
+        const { order_id, gross_amount, payment_type, transaction_time, productId, customerId } = req.body;
+        const paymentData =
+            payment_type === 'bank_transfer' ? JSON.stringify(req.body.va_numbers) :
+                payment_type === 'qris' ? req.body.qris_url : ''
         const productSelected = await prisma.product.findUnique({ where: { id: productId } })
 
         await prisma.order.create({
@@ -140,6 +145,8 @@ export const successPayment = async (req, res) => {
                 completed_at: transaction_time ? new Date(transaction_time) : new Date(),
                 customer_id: customerId,
                 adjusted: true,
+                payment_type: payment_type,
+                payment_data: paymentData,
                 status_id: finishedStatus.id,
                 category_id: '1',
                 product_id: productSelected.id,
@@ -147,60 +154,20 @@ export const successPayment = async (req, res) => {
                 updated_at: new Date()
             }
         })
-
-        // langsung selesai
-        // if ((productCategory == 4 && licenseId) || productCategory == 2) {
-        //     const timelineData = [1, 2, 4, 5]
-        //     timelineData.forEach(async (item, idx) => {
-        //         let status = await prisma.status.findUnique({ where: { id: item } })
-        //         await prisma.timelineStatus.create({
-        //             data: {
-        //                 sequence: idx + 1,
-        //                 description: status.description,
-        //                 status_id: status.id,
-        //                 order_id: order_id,
-        //                 created_at: new Date(),
-        //                 updated_at: new Date()
-        //             }
-        //         })
-        //     })
-
-        //     // license
-        //     if (productCategory == 4) {
-        //         const quantity = Number(gross_amount) / productSelected.price
-        //         const addDays = quantity * 7
-        //         const licenseSelected = await prisma.license.findUnique({ where: { id: licenseId } })
-        //         const curDate = new Date(licenseSelected.expire_date)
-        //         const newExpireDate = curDate > new Date() ? curDate : new Date()
-        //         newExpireDate.setDate(newExpireDate.getDate() + addDays)
-
-        //         await prisma.license.update({
-        //             where: {
-        //                 id: licenseId
-        //             },
-        //             data: {
-        //                 expire_date: newExpireDate
-        //             }
-        //         })
-        //     }
-        // }
-        // diproses admin
-        // else {
-        //     const timelineData = [1, 2, 4]
-        //     timelineData.forEach(async (item, idx) => {
-        //         let status = await prisma.status.findUnique({ where: { id: item } })
-        //         await prisma.timelineStatus.create({
-        //             data: {
-        //                 sequence: idx + 1,
-        //                 description: status.description,
-        //                 status_id: status.id,
-        //                 order_id: order_id,
-        //                 created_at: new Date(),
-        //                 updated_at: new Date()
-        //             }
-        //         })
-        //     })
-        // }
+        const timelineData = [1, 2, 4]
+        timelineData.forEach(async (item, idx) => {
+            let status = await prisma.status.findUnique({ where: { id: item } })
+            await prisma.timelineStatus.create({
+                data: {
+                    sequence: idx + 1,
+                    description: status.description,
+                    status_id: status.id,
+                    order_id: order_id,
+                    created_at: new Date(),
+                    updated_at: new Date()
+                }
+            })
+        })
 
         return res.status(200).json({ success: true, statusCode: 200, message: "Payment order success" })
     }
@@ -211,9 +178,6 @@ export const successPayment = async (req, res) => {
 
 export const webhookPayment = async (req, res) => {
     try {
-        // console.log(snap.transaction)
-        console.log(req.body);
-        return res.status(200).send("OK")
         const { order_id, transaction_status, gross_amount, settlement_time } = req.body;
         const maxTimeline = await prisma.timelineStatus.aggregate({ _max: { sequence: true }, where: { order_id: order_id } })
 
@@ -222,20 +186,28 @@ export const webhookPayment = async (req, res) => {
                 where: { id: order_id },
                 data: {
                     down_payment: gross_amount,
-                    status_id: 5,
+                    status_id: 4,
                     completed_at: settlement_time ? new Date(settlement_time) : new Date()
                 }
             })
 
-            const finishedStatus = await prisma.status.findUnique({ where: { id: 5 } })
-            await prisma.timelineStatus.create({
-                data: {
-                    sequence: maxTimeline._max.sequence ? maxTimeline._max.sequence + 1 : 1,
-                    description: finishedStatus.description,
-                    status_id: finishedStatus.id,
-                    order_id: order_id
+            const processTimeline = await prisma.timelineStatus.findFirst({
+                where: {
+                    order_id: order_id,
+                    status_id: 4
                 }
             })
+            if (!processTimeline) {
+                const finishedStatus = await prisma.status.findUnique({ where: { id: 4 } })
+                await prisma.timelineStatus.create({
+                    data: {
+                        sequence: maxTimeline._max.sequence ? maxTimeline._max.sequence + 1 : 1,
+                        description: finishedStatus.description,
+                        status_id: finishedStatus.id,
+                        order_id: order_id
+                    }
+                })
+            }
         }
         else if (transaction_status === 'expire' || transaction_status === 'cancel') {
             await prisma.order.update({
@@ -255,15 +227,7 @@ export const webhookPayment = async (req, res) => {
                 }
             })
         }
-        else if (transaction_status === 'pending') {
-            await prisma.order.create({
-                data: {
-
-                }
-            })
-        }
-
-        return res.status(200).json({ success: true, message: 'Webhook received successfully.' });
+        return res.status(200).send("OK")
     }
     catch (err) {
         return res.status(500).json({ error: err.message || 'An error occurred while processing the webhook.' });
@@ -282,26 +246,7 @@ export const tokenPayment = async (req, res) => {
             return res.status(404).json({ success: false, statusCode: 404, message: "Customer not found!" })
 
         const customerSplitName = splitFullName(customer.name)
-        const { _max } = await prisma.order.aggregate({ _max: { id: true } })
-        const lastOrderNumber = Number((_max.id ?? '').slice(-4)) || 0;
-        // const newOrderId = moment().format("YYYYMM") + (lastOrderNumber + 1).toString().padStart(4, '0');
         const newOrderId = `${moment().format("YYYYMM")}${Math.floor(Math.random() * 9000) + 1000}`;
-        // const newOrderId = '2025060040'
-        // const newOrder = await prisma.order.create({
-        //     data: {
-        //         id: newOrderId,
-        //         title: productSelected.name,
-        //         description: productSelected.description,
-        //         down_payment: 0,
-        //         invoice: productSelected.price * Number(quantity),
-        //         customer_id: customerId,
-        //         status_id: 2,
-        //         category_id: categories_id[Math.floor(Math.random() * categories_id.length)].id,
-        //         product_id: productSelected.id,
-        //         created_at: new Date(),
-        //         updated_at: new Date()
-        //     }
-        // })
 
         const parameter = {
             item_details: {

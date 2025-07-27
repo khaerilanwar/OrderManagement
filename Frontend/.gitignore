@@ -41,8 +41,8 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
-.vercel
-.angular
+# .vercel
+# .angular
 # Firebase
 .firebase
 *-debug.log

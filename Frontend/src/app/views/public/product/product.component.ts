@@ -125,14 +125,16 @@ export class ProductComponent implements OnInit {
                 licenseId: this.licenseSelected ? this.licenseSelected.id : null
               }
 
+              this.messageService.add({
+                severity: 'success',
+                summary: 'Pembayaran Berhasil',
+                detail: 'Pesanan Anda telah berhasil dibuat. Silakan cek di menu My Order.',
+              });
+              this.router.navigate(['/my-order']);
+
               this.orderService.onSuccessPayment(data).subscribe(
                 (res: any) => {
-                  this.messageService.add({
-                    severity: 'success',
-                    summary: 'Pembayaran Berhasil',
-                    detail: 'Pesanan Anda telah berhasil dibuat. Silakan cek di menu My Order.',
-                  });
-                  this.router.navigate(['/my-order']);
+                  console.log("Payment success:", res);
                 }
               )
             },
@@ -145,13 +147,15 @@ export class ProductComponent implements OnInit {
                 licenseId: this.licenseSelected ? this.licenseSelected.id : null
               }
 
+              this.messageService.add({
+                severity: 'info',
+                summary: 'Pembayaran Tertunda',
+                detail: 'Mohon melakukan pembayaran melalui metode yang telah dipilih.',
+              })
+
               this.orderService.onPendingPayment(data).subscribe(
                 (res: any) => {
-                  this.messageService.add({
-                    severity: 'info',
-                    summary: 'Pembayaran Tertunda',
-                    detail: 'Mohon melakukan pembayaran melalui metode yang telah dipilih.',
-                  })
+                  console.log("Payment pending:", res);
                 }
               )
             },

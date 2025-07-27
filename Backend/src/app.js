@@ -13,9 +13,10 @@ dotenv.config();
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
+const port = process.env.PORT || 3000;
 const allowedOrigins = [
-    'http://localhost:4200'
+    'http://localhost:4200',
+    'https://siprodig.vercel.app'
 ]
 
 app.use(cors({
@@ -41,5 +42,7 @@ app.use(express.json())
 app.post("/webhook/payment", cors(), webhookPayment)
 app.use(router)
 app.listen(process.env.PORT, () => {
-    printLog(`Server is running on port ${process.env.PORT}`);
+    printLog(`Server is running on port ${port}`);
 })
+
+export default app;
