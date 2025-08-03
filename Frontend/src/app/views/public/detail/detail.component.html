@@ -2,7 +2,8 @@
     <p-panel [header]="'Pesanan : ' + order?.id" class="w-full">
 
         @if (order?.status_id === 2) {
-        <p-button label="Bayar Sekarang" icon="pi pi-credit-card" severity="info" class="mb-4" />
+        <p-button label="Bayar Sekarang" (onClick)="payPending()" icon="pi pi-credit-card" severity="info"
+            class="mb-4" />
         }
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -112,3 +113,54 @@
 </div>
 
 <p-toast class="font-medium" />
+<p-dialog header="Detail Pembayaran" [closeOnEscape]="true" [dismissableMask]="true" [modal]="true"
+    [style]="{'width': '50rem'}" [(visible)]="openPendingPayment">
+
+    <div class="max-w-4xl rounded-lg shadow-md p-4">
+        <table class="text-base border-separate border-spacing-y-3">
+            <tr>
+                <td class="min-w-44 font-semibold">Metode Pembayaran</td>
+                <td class="min-w-4">:</td>
+                <td>{{ order?.payment_type == 'bank_transfer' ? 'Transfer Bank' : 'QRIS' }}</td>
+            </tr>
+            <tr>
+                <td class="min-w-44 font-semibold">Total Tagihan</td>
+                <td class="min-w-4">:</td>
+                <td>{{ order?.invoice | currency: 'Rp. ' : 'symbol' : '1.0' }}</td>
+            </tr>
+            @if (order?.payment_type == 'bank_transfer') {
+            <tr>
+                <td class="min-w-44 font-semibold">Nama Bank</td>
+                <td class="min-w-4">:</td>
+                <td class="uppercase">{{ paymentDataTransferBank.bank }}</td>
+            </tr>
+            <tr>
+                <td class="min-w-44 font-semibold">Virtual Account</td>
+                <td class="min-w-4">:</td>
+                <td class="uppercase">
+                    <div class="flex items-center justify-center gap-2">
+                        <p class="my-auto border font-semibold bg-gray-100 border-gray-200 py-2.5 px-3 rounded-lg">
+                            {{
+                            paymentDataTransferBank.va_number }}
+                        </p>
+                        <p-button class="block" icon="pi pi-copy" severity="secondary" outlined
+                            (onClick)="onCopyToken(paymentDataTransferBank.va_number)" />
+                    </div>
+                </td>
+            </tr>
+            } @else {
+            <tr>
+                <td colspan="3" class="text-center">
+                    <div class="flex items-center justify-center gap-2">
+                        <img [src]="order?.payment_data" alt="QR Code" class="w-48 h-48" />
+                    </div>
+                </td>
+            </tr>
+            }
+        </table>
+    </div>
+
+    <div class="flex justify-end gap-2 mt-10">
+        <p-button label="OK" severity="info" (onClick)="openPendingPayment = false" />
+    </div>
+</p-dialog>

@@ -12,10 +12,11 @@ import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { DialogModule } from 'primeng/dialog';
 
 @Component({
   selector: 'app-detail',
-  imports: [PanelModule, ToastModule, CardModule, ButtonModule, BadgeModule, DividerModule, TimelineModule, CurrencyPipe, DatePipe],
+  imports: [PanelModule, ToastModule, CardModule, ButtonModule, BadgeModule, DividerModule, TimelineModule, DialogModule, CurrencyPipe, DatePipe],
   templateUrl: './detail.component.html',
   styleUrl: './detail.component.scss'
 })
@@ -24,6 +25,11 @@ export class DetailComponent implements OnInit {
   order: any
   orderId: string = '';
   events: any[] = [];
+  openPendingPayment: boolean = false;
+  paymentDataTransferBank: any = {
+    bank_name: '',
+    account_number: ''
+  }
 
   constructor(
     private orderService: OrderService,
@@ -36,6 +42,10 @@ export class DetailComponent implements OnInit {
   ngOnInit(): void {
     this.orderId = this.route.snapshot.params['id'];
     this.getOrderDetail(this.orderId);
+  }
+
+  payPending() {
+    this.openPendingPayment = true;
   }
 
   payConfirm() {
@@ -68,13 +78,30 @@ export class DetailComponent implements OnInit {
       (res: any) => {
         this.spinner.hide();
         this.order = res.data;
-
-        console.log(this.order.timelineStatus)
+        this.paymentDataTransferBank =
+          this.order?.payment_type === 'bank_transfer' ?
+            JSON.parse(this.order.payment_data)[0] : this.paymentDataTransferBank
       },
       (err: HttpErrorResponse) => {
         this.spinner.hide();
       }
     )
+  }
+
+  onCopyToken(token: any) {
+    navigator.clipboard.writeText(token).then(() => {
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Success',
+        detail: 'Token copied to clipboard'
+      });
+    }).catch((err) => {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Failed to copy token'
+      });
+    });
   }
 
   getIconTimeline(status: string): string {
