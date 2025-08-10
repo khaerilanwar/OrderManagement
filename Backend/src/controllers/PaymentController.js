@@ -68,8 +68,6 @@ export const cancelPayment = async (req, res) => {
             }
         })
 
-        console.log(responseData)
-
         return res.status(200).json({ ok: 'ok' })
     }
     catch (err) {
@@ -82,7 +80,8 @@ export const pendingPayment = async (req, res) => {
         const { order_id, gross_amount, payment_type, productId, customerId } = req.body;
         const paymentData =
             payment_type === 'bank_transfer' ? JSON.stringify(req.body.va_numbers) :
-                payment_type === 'qris' ? req.body.qris_url : ''
+                payment_type === 'cstore' ? JSON.stringify(req.body) :
+                    payment_type === 'qris' ? req.body.qris_url : ''
 
         const pendingStatus = await prisma.status.findUnique({ where: { id: 2 } })
         const productSelected = await prisma.product.findUnique({ where: { id: productId } })
@@ -184,7 +183,7 @@ export const webhookPayment = async (req, res) => {
             await prisma.order.update({
                 where: { id: order_id },
                 data: {
-                    down_payment: gross_amount,
+                    down_payment: Number(gross_amount),
                     status_id: 4,
                     completed_at: settlement_time ? new Date(settlement_time) : new Date()
                 }
@@ -203,7 +202,9 @@ export const webhookPayment = async (req, res) => {
                         sequence: maxTimeline._max.sequence ? maxTimeline._max.sequence + 1 : 1,
                         description: finishedStatus.description,
                         status_id: finishedStatus.id,
-                        order_id: order_id
+                        order_id: order_id,
+                        created_at: new Date(),
+                        updated_at: new Date()
                     }
                 })
             }
@@ -222,7 +223,9 @@ export const webhookPayment = async (req, res) => {
                     sequence: maxTimeline._max.sequence ? maxTimeline._max.sequence + 1 : 1,
                     description: finishedStatus.description,
                     status_id: finishedStatus.id,
-                    order_id: order_id
+                    order_id: order_id,
+                    created_at: new Date(),
+                    updated_at: new Date()
                 }
             })
         }

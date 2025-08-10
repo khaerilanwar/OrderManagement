@@ -3,7 +3,7 @@ import { BadgeModule } from 'primeng/badge';
 import { PanelModule } from 'primeng/panel';
 import { OrderService } from '../../../services/admin/order.service';
 import { ActivatedRoute } from '@angular/router';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { DividerModule } from 'primeng/divider';
 import { CurrencyPipe, DatePipe, NgIf } from '@angular/common';
@@ -30,12 +30,18 @@ export class DetailComponent implements OnInit {
     bank_name: '',
     account_number: ''
   }
+  paymentDataCStore: any = {
+    store_name: '',
+    payment_code: '',
+    invoice_file: ''
+  }
 
   constructor(
     private orderService: OrderService,
     private route: ActivatedRoute,
     private spinner: NgxSpinnerService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private http: HttpClient
   ) {
   }
 
@@ -46,6 +52,10 @@ export class DetailComponent implements OnInit {
 
   payPending() {
     this.openPendingPayment = true;
+  }
+
+  downloadInvoice() {
+    window.open(this.paymentDataCStore.invoice_file);
   }
 
   payConfirm() {
@@ -81,6 +91,17 @@ export class DetailComponent implements OnInit {
         this.paymentDataTransferBank =
           this.order?.payment_type === 'bank_transfer' ?
             JSON.parse(this.order.payment_data)[0] : this.paymentDataTransferBank
+
+        if (this.order?.payment_type === 'cstore') {
+          const payStore = JSON.parse(this.order.payment_data);
+          this.paymentDataCStore = {
+            store_name: payStore.payment_code.startsWith('20') ? 'Alfamart' : 'Indomaret',
+            payment_code: payStore.payment_code || '',
+            invoice_file: payStore.pdf_url || ''
+          }
+        }
+
+        console.log(this.paymentDataCStore)
       },
       (err: HttpErrorResponse) => {
         this.spinner.hide();

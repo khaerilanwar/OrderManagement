@@ -21,7 +21,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
     return next(newRequest).pipe(
         // Success Response
-        tap((event) => {}),
+        tap((event) => { }),
         // Error Response
         catchError((err: HttpErrorResponse) => {
             if (err.status === 401) {
