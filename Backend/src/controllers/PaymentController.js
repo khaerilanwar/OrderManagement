@@ -131,8 +131,10 @@ export const successPayment = async (req, res) => {
         const { order_id, gross_amount, payment_type, transaction_time, productId, customerId } = req.body;
         const paymentData =
             payment_type === 'bank_transfer' ? JSON.stringify(req.body.va_numbers) :
-                payment_type === 'qris' ? req.body.qris_url : ''
+                payment_type === 'cstore' ? JSON.stringify(req.body) :
+                    payment_type === 'qris' ? req.body.qris_url : ''
         const productSelected = await prisma.product.findUnique({ where: { id: productId } })
+        const finishedStatus = await prisma.status.findUnique({ where: { id: 4 } })
 
         await prisma.order.create({
             data: {
