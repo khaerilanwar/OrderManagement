@@ -48,7 +48,7 @@ export class PublicLogin implements OnInit {
         private spinner: NgxSpinnerService,
         private messageService: MessageService,
         private router: Router
-    ) {}
+    ) { }
 
     ngOnInit(): void {
         if (this.authService.isAuthCustomer()) {
@@ -57,6 +57,17 @@ export class PublicLogin implements OnInit {
     }
 
     onLogin() {
+        if (!this.customer_id.trim()) {
+            this.messageService.add({ severity: 'warn', summary: 'Peringatan', detail: 'Email / No. HP tidak boleh kosong' });
+            return;
+        }
+        // cek no hp atau email
+        const isPhone = /^08\d{8,11}$/.test(this.customer_id.trim());
+        const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.customer_id.trim());
+        if (!isPhone && !isEmail) {
+            this.messageService.add({ severity: 'warn', summary: 'Peringatan', detail: 'Email / No. HP tidak valid' });
+            return;
+        }
         this.spinner.show();
         this.authService.customerLogin(this.customer_id.trim()).subscribe(
             (res: any) => {

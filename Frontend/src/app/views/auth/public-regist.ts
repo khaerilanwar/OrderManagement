@@ -83,7 +83,7 @@ export class PublicRegist implements OnInit {
         private spinner: NgxSpinnerService,
         private messageService: MessageService,
         private router: Router
-    ) {}
+    ) { }
 
     ngOnInit(): void {
         if (this.authService.isAuthCustomer()) {
@@ -92,6 +92,10 @@ export class PublicRegist implements OnInit {
     }
 
     onRegist() {
+        // validasi
+        if (!this.checkInput()) {
+            return;
+        }
         this.spinner.show();
         this.authService.customerRegister(this.name.trim(), this.email.trim(), this.address.trim(), this.phone.trim(), this.whatsapp).subscribe(
             (res: any) => {
@@ -116,20 +120,26 @@ export class PublicRegist implements OnInit {
     }
 
     checkInput() {
-        // const customer = z.object({
-        //     name: z.string().min(3, { message: 'Nama minimal 3 karakter' }),
-        //     email: z.string().email({ message: 'Email tidak valid' }),
-        //     address: z.string().min(3, { message: 'Asal minimal 3 karakter' }),
-        //     phone: z.string().regex(/^\d{4}-\d{4}-\d{5}$/, { message: 'Format No. HP tidak valid' }),
-        //     whatsapp: z.boolean()
-        // });
-        // const result = customer.safeParse({
-        //     name: this.name,
-        //     email: this.email,
-        //     address: this.address,
-        //     phone: this.phone,
-        //     whatsapp: this.whatsapp
-        // });
-        // console.log(result.error);
+        if (this.name.trim().length < 5) {
+            this.messageService.add({ severity: 'warn', summary: 'Peringatan', detail: 'Nama minimal 5 karakter' });
+            return false;
+        }
+        if (!this.email.trim()) {
+            this.messageService.add({ severity: 'warn', summary: 'Peringatan', detail: 'Email tidak boleh kosong' });
+            return false;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email.trim())) {
+            this.messageService.add({ severity: 'warn', summary: 'Peringatan', detail: 'Email tidak valid' });
+            return false;
+        }
+        if (this.address.trim().length < 3) {
+            this.messageService.add({ severity: 'warn', summary: 'Peringatan', detail: 'Asal minimal 3 karakter' });
+            return false;
+        }
+        if (!/^08\d{8,11}$/.test(this.phone.trim())) {
+            this.messageService.add({ severity: 'warn', summary: 'Peringatan', detail: 'Format No. HP tidak valid' });
+            return false;
+        }
+        return true;
     }
 }

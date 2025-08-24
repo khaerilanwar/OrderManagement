@@ -60,6 +60,10 @@ export class Login implements OnInit {
     }
 
     onLogin() {
+        if (!this.username.trim() || !this.password.trim()) {
+            this.messageService.add({ severity: 'warn', summary: 'Warning', detail: 'Username and Password are required' });
+            return;
+        }
         this.spinner.show();
         this.authService.authenticate(this.username, this.password).subscribe(
             (response: any) => {
